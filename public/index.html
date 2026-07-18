@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="hi-IN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="PYQ Master — India's AI-powered exam prep. Practice NDA, CDS, UPSC, JEE, NEET, SSC, CUET with 50% real PYQs. Hindi & English medium. Free unlimited attempts.">
+<meta name="keywords" content="NDA PYQ, CDS question paper, UPSC mock test, JEE previous year questions, NEET PYQ, SSC CGL mock, CUET practice, government exam prep India">
+<meta name="theme-color" content="#0a0c14">
+<meta property="og:title"       content="PYQ Master — AI Exam Prep | NDA CDS UPSC JEE NEET SSC">
+<meta property="og:description" content="50% PYQs + 50% AI questions. 40+ Indian exams. Hindi & English medium. Free unlimited attempts.">
+<meta property="og:type"        content="website">
+<title>PYQ Master — AI Exam Prep | NDA CDS UPSC JEE NEET SSC CUET</title>
+
+<!-- ══════════════════════════════════════════════════════════
+     GOOGLE ANALYTICS
+     ACTION NEEDED: Replace BOTH "G-XXXXXXXXXX" below with
+     your real Measurement ID from analytics.google.com
+     Admin → Data Streams → Web → Measurement ID
+══════════════════════════════════════════════════════════ -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+  function ga(action, cat, label) {
+    if (typeof gtag !== 'undefined') gtag('event', action, {event_category: cat, event_label: label});
+  }
+</script>
+
+<!-- Speed: preconnect fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════════════
+   TOKENS
+══════════════════════════════════════════════ */
+:root {
+  --bg:       #0a0c14;
+  --surf:     #12151f;
+  --surf2:    #1a1f2e;
+  --border:   #252a3a;
+  --gold:     #f5a623;
+  --pink:     #e84393;
+  --teal:     #00d4aa;
+  --text:     #e8ecf5;
+  --muted:    #8892a4;
+  --red:      #ff4757;
+  --green:    #2ed573;
+  --blue:     #1e90ff;
+  --purple:   #9b59b6;
+  --r:        14px;
+}
+
+/* ══════════════════════════════════════════════
+   RESET
+══════════════════════════════════════════════ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+button{cursor:pointer;font-family:inherit;border:none;outline:none;background:none}
+input{font-family:inherit;outline:none;border:none}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(245,166,35,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(245,166,35,.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+
+/* ══════════════════════════════════════════════
+   SPLASH  (slow-connection animation)
+══════════════════════════════════════════════ */
+#splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6rem}
+.sp-logo{font-family:'Rajdhani',sans-serif;font-size:2.8rem;font-weight:700;letter-spacing:3px;background:linear-gradient(135deg,var(--gold),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sp-logo span{-webkit-text-fill-color:var(--text)}
+.orbit{position:relative;width:72px;height:72px}
+.orbit .ring{position:absolute;inset:0;border-radius:50%;border:2.5px solid transparent}
+.orbit .ring:nth-child(1){border-top-color:var(--gold);animation:spin 1.1s linear infinite}
+.orbit .ring:nth-child(2){inset:10px;border-right-color:var(--pink);animation:spin 1.7s linear infinite reverse}
+.orbit .ring:nth-child(3){inset:22px;border-bottom-color:var(--teal);animation:spin .9s linear infinite}
+.orbit .core{position:absolute;inset:31px;background:var(--gold);border-radius:50%;animation:pulse .9s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.55}}
+.sp-txt{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;animation:blink 1.4s ease-in-out infinite}
+.sp-tag{font-size:.78rem;color:var(--muted)}.sp-tag b{color:var(--gold)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+#splash.out{animation:splashOut .45s ease forwards}
+@keyframes splashOut{to{opacity:0;transform:scale(1.03);pointer-events:none}}
+
+/* ══════════════════════════════════════════════
+   LANGUAGE SELECT
+══════════════════════════════════════════════ */
+#lang-screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.2rem;text-align:center;position:relative;z-index:1;animation:up .45s ease}
+.ls-logo{font-family:'Rajdhani',sans-serif;font-size:2.4rem;font-weight:700;letter-spacing:3px;background:linear-gradient(135deg,var(--gold),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.2rem}
+.ls-logo span{-webkit-text-fill-color:var(--text)}
+.ls-sub{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:3px;color:var(--teal);text-transform:uppercase;margin-bottom:2.5rem}
+.ls-title{font-family:'Rajdhani',sans-serif;font-size:clamp(1.6rem,5vw,2.3rem);font-weight:700;line-height:1.2;margin-bottom:.6rem}
+.ls-title .hi{color:var(--gold)}
+.ls-desc{color:var(--muted);font-size:.84rem;margin-bottom:2.2rem}
+.lang-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:440px;width:100%}
+@media(max-width:380px){.lang-cards{grid-template-columns:1fr}}
+.lc{background:var(--surf);border:2px solid var(--border);border-radius:20px;padding:1.9rem 1.3rem;transition:all .3s cubic-bezier(.34,1.56,.64,1);cursor:pointer;position:relative;overflow:hidden}
+.lc::after{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s}
+.lc.en::after{background:linear-gradient(135deg,rgba(30,144,255,.1),transparent)}
+.lc.hi::after{background:linear-gradient(135deg,rgba(245,166,35,.1),transparent)}
+.lc:hover,.lc:focus{transform:translateY(-6px) scale(1.025)}
+.lc:hover::after,.lc:focus::after{opacity:1}
+.lc.en:hover{border-color:var(--blue);box-shadow:0 14px 40px rgba(30,144,255,.22)}
+.lc.hi:hover{border-color:var(--gold);box-shadow:0 14px 40px rgba(245,166,35,.22)}
+.lc:active{transform:scale(.96)}
+.lc-flag{font-size:2.6rem;display:block;margin-bottom:.8rem}
+.lc-name{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:1px;margin-bottom:.3rem}
+.lc.en .lc-name{color:var(--blue)}.lc.hi .lc-name{color:var(--gold)}
+.lc-nat{font-size:1rem;font-weight:700;margin-bottom:.4rem}
+.lc-desc{font-size:.72rem;color:var(--muted);line-height:1.5}
+.lc-badge{display:inline-block;margin-top:.7rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:1px;padding:3px 9px;border-radius:20px}
+.lc.en .lc-badge{background:rgba(30,144,255,.1);color:var(--blue);border:1px solid rgba(30,144,255,.25)}
+.lc.hi .lc-badge{background:rgba(245,166,35,.1);color:var(--gold);border:1px solid rgba(245,166,35,.25)}
+.ls-foot{margin-top:2rem;font-size:.68rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* ══════════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════════ */
+#hdr{display:none;position:sticky;top:0;z-index:100;background:rgba(10,12,20,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 1.2rem;height:54px;align-items:center;justify-content:space-between}
+.logo{font-family:'Rajdhani',sans-serif;font-size:1.55rem;font-weight:700;letter-spacing:2px;background:linear-gradient(135deg,var(--gold),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+.logo span{-webkit-text-fill-color:var(--text)}
+.hdr-r{display:flex;align-items:center;gap:.6rem}
+.lang-btn{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:1px;padding:4px 10px;border-radius:8px;border:1px solid var(--border);color:var(--muted);transition:all .2s}
+.lang-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ══════════════════════════════════════════════
+   APP + SCREENS
+══════════════════════════════════════════════ */
+#app{display:none;position:relative;z-index:1;max-width:880px;margin:0 auto;padding:1.5rem 1rem 5rem}
+.scr{display:none;animation:up .35s ease}
+.scr.on{display:block}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════════════════
+   HOME
+══════════════════════════════════════════════ */
+.hero{text-align:center;padding:2rem 0 1.5rem}
+.hero-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(245,166,35,.3);background:rgba(245,166,35,.05);padding:5px 14px;border-radius:20px;margin-bottom:1.2rem}
+.hero h1{font-family:'Rajdhani',sans-serif;font-size:clamp(2rem,6vw,3.4rem);font-weight:700;line-height:1.1;margin-bottom:.9rem}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--gold),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-p{color:var(--muted);font-size:.9rem;max-width:480px;margin:0 auto 1.6rem;line-height:1.7}
+.stats{display:flex;justify-content:center;gap:1.6rem;flex-wrap:wrap;margin-bottom:1.8rem}
+.st{text-align:center}
+.st-n{font-family:'Rajdhani',sans-serif;font-size:1.7rem;font-weight:700;color:var(--gold)}
+.st-l{font-size:.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.srch{position:relative;max-width:500px;margin:0 auto 1.8rem}
+.srch input{width:100%;background:var(--surf);border:1.5px solid var(--border);border-radius:12px;padding:.9rem 1rem .9rem 2.8rem;color:var(--text);font-size:.9rem;transition:border-color .2s}
+.srch input:focus{border-color:var(--gold)}
+.srch input::placeholder{color:var(--muted)}
+.srch-ic{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.sec-lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem}
+.cats{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem}
+.cat{font-size:.73rem;font-weight:700;padding:5px 13px;border-radius:20px;border:1.5px solid var(--border);color:var(--muted);transition:all .2s;white-space:nowrap}
+.cat.on,.cat:hover{border-color:var(--gold);color:var(--gold);background:rgba(245,166,35,.08)}
+.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:.85rem}
+@media(max-width:480px){.egrid{grid-template-columns:repeat(2,1fr);gap:.65rem}}
+.ecard{background:var(--surf);border:1.5px solid var(--border);border-radius:var(--r);padding:1.1rem .9rem;cursor:pointer;transition:all .22s;position:relative;overflow:hidden}
+.ecard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--ec,var(--gold));transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.ecard:hover{border-color:var(--ec,var(--gold));transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.35)}
+.ecard:hover::before{transform:scaleX(1)}
+.ecard:active{transform:scale(.97)}
+.ei{font-size:1.7rem;margin-bottom:.55rem}
+.en{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.5px;margin-bottom:.2rem}
+.eo{font-size:.63rem;color:var(--muted);margin-bottom:.65rem}
+.etags{display:flex;gap:.3rem;flex-wrap:wrap}
+.tag{font-size:.57rem;font-family:'JetBrains Mono',monospace;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,.05);color:var(--muted)}
+
+/* ══════════════════════════════════════════════
+   BACK BTN
+══════════════════════════════════════════════ */
+.back{display:inline-flex;align-items:center;gap:.4rem;font-size:.82rem;color:var(--muted);margin-bottom:1.2rem;transition:color .2s;padding:0}
+.back:hover{color:var(--text)}
+
+/* ══════════════════════════════════════════════
+   EXAM INFO
+══════════════════════════════════════════════ */
+.exam-banner{background:var(--surf);border:1.5px solid var(--border);border-radius:18px;padding:1.5rem 1.3rem;margin-bottom:1.1rem;position:relative;overflow:hidden}
+.exam-banner::after{content:attr(data-emoji);position:absolute;right:1.2rem;top:50%;transform:translateY(-50%);font-size:4rem;opacity:.07;pointer-events:none}
+.eb-title{font-family:'Rajdhani',sans-serif;font-size:1.9rem;font-weight:700;letter-spacing:1px;margin-bottom:.3rem}
+.eb-sub{color:var(--muted);font-size:.82rem;margin-bottom:1rem}
+.meta-row{display:flex;gap:1.2rem;flex-wrap:wrap}
+.mi{display:flex;flex-direction:column;gap:2px}
+.ml{font-family:'JetBrains Mono',monospace;font-size:.57rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.mv{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:var(--gold)}
+.igrid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1rem}
+@media(max-width:520px){.igrid{grid-template-columns:1fr}}
+.icard{background:var(--surf);border:1.5px solid var(--border);border-radius:var(--r);padding:1.2rem}
+.ict{font-family:'JetBrains Mono',monospace;font-size:.59rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:.9rem}
+.swrap{margin-bottom:.8rem}
+.slbl{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem}
+.slbl span:last-child{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--gold)}
+.strack{height:5px;background:var(--surf2);border-radius:99px;overflow:hidden}
+.sfill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.ditem{display:flex;align-items:center;gap:.7rem;font-size:.8rem;margin-bottom:.6rem}
+.ddot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.dbar{flex:1;height:4px;background:var(--surf2);border-radius:99px;overflow:hidden}
+.dbf{height:100%;border-radius:99px}
+.ctbl{width:100%;border-collapse:collapse}
+.ctbl th{font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-align:left;padding:0 0 .5rem;border-bottom:1px solid var(--border)}
+.ctbl td{font-size:.8rem;padding:.44rem 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.ctbl td:last-child{font-family:'JetBrains Mono',monospace;color:var(--gold);font-weight:600}
+.abox{background:var(--surf);border:1.5px solid var(--border);border-radius:18px;padding:1.6rem 1.2rem;text-align:center;margin-bottom:1.1rem}
+.abox h3{font-family:'Rajdhani',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:.3rem}
+.abox p{color:var(--muted);font-size:.82rem;margin-bottom:1.4rem}
+.agrid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+@media(max-width:420px){.agrid{grid-template-columns:1fr}}
+.abtn{border-radius:12px;padding:1.1rem .9rem;border:1.5px solid;text-align:left;transition:all .22s;width:100%}
+.abtn.pri{background:linear-gradient(135deg,var(--gold),#e8920a);border-color:transparent;color:#0a0c14}
+.abtn.sec{background:transparent;border-color:var(--border);color:var(--text)}
+.abtn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.abtn.sec:hover{border-color:var(--teal)}
+.abtn:active{transform:scale(.97)}
+.ab-ico{font-size:1.4rem;display:block;margin-bottom:.4rem}
+.ab-t{font-weight:800;font-size:.9rem;margin-bottom:.2rem}
+.ab-d{font-size:.72rem;opacity:.75;line-height:1.4}
+
+/* ══════════════════════════════════════════════
+   SUBJECT PICK
+══════════════════════════════════════════════ */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:.85rem;margin-bottom:1.3rem}
+@media(max-width:480px){.sgrid{grid-template-columns:repeat(2,1fr)}}
+.scard{background:var(--surf);border:1.5px solid var(--border);border-radius:12px;padding:1rem .85rem;cursor:pointer;transition:all .22s;position:relative}
+.scard:hover,.scard.on{border-color:var(--teal);background:rgba(0,212,170,.06)}
+.scard.on::after{content:'✓';position:absolute;top:.6rem;right:.6rem;width:18px;height:18px;background:var(--teal);color:#0a0c14;border-radius:50%;font-size:.58rem;font-weight:900;display:flex;align-items:center;justify-content:center;line-height:18px;text-align:center}
+.sc-ico{font-size:1.4rem;margin-bottom:.45rem}
+.sc-n{font-weight:700;font-size:.85rem;margin-bottom:.25rem}
+.sc-ch{font-size:.66rem;color:var(--muted)}
+.sc-w{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--gold);border:1px solid rgba(245,166,35,.3);padding:2px 6px;border-radius:4px;margin-top:.45rem}
+
+/* ══════════════════════════════════════════════
+   CHAPTER PICK
+══════════════════════════════════════════════ */
+.clist{margin-bottom:1.3rem}
+.ci{display:flex;align-items:center;gap:.8rem;background:var(--surf);border:1.5px solid var(--border);border-radius:10px;padding:.78rem 1rem;margin-bottom:.5rem;cursor:pointer;transition:all .2s}
+.ci:hover,.ci.on{border-color:var(--pink);background:rgba(232,67,147,.06)}
+.ci-cb{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.65rem;transition:all .2s;color:#fff}
+.ci.on .ci-cb{background:var(--pink);border-color:var(--pink)}
+.ci-n{font-size:.84rem;font-weight:600;flex:1}
+.ci-m{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--muted)}
+
+/* ══════════════════════════════════════════════
+   QUIZ
+══════════════════════════════════════════════ */
+.qtop{background:var(--surf);border:1.5px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;margin-bottom:1.2rem;display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
+.qi{min-width:0}
+.qi-m{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--muted);letter-spacing:1px}
+.qi-e{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.95rem}
+.qpbar{flex:1;min-width:80px;height:5px;background:var(--surf2);border-radius:99px;overflow:hidden}
+.qpfill{height:100%;background:linear-gradient(90deg,var(--gold),var(--pink));border-radius:99px;transition:width .4s ease}
+.qnums{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--muted);white-space:nowrap}
+.qnums b{color:var(--text)}
+.timer{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;padding:4px 12px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid var(--border);transition:all .3s}
+.timer.warn{color:var(--red);border-color:var(--red);animation:blink 1s infinite}
+.qcard{background:var(--surf);border:1.5px solid var(--border);border-radius:18px;padding:1.5rem 1.2rem;margin-bottom:1rem}
+.qbadge{display:inline-flex;align-items:center;gap:.35rem;font-family:'JetBrains Mono',monospace;font-size:.59rem;letter-spacing:1px;padding:3px 10px;border-radius:20px;margin-bottom:.9rem}
+.qbadge.pyq{background:rgba(245,166,35,.1);color:var(--gold);border:1px solid rgba(245,166,35,.2)}
+.qbadge.ai{background:rgba(0,212,170,.1);color:var(--teal);border:1px solid rgba(0,212,170,.2)}
+.qnum{font-family:'JetBrains Mono',monospace;font-size:.64rem;color:var(--muted);margin-bottom:.45rem}
+.qtext{font-size:.95rem;font-weight:600;line-height:1.65;margin-bottom:1.3rem}
+.opts{display:flex;flex-direction:column;gap:.6rem}
+.opt{display:flex;align-items:flex-start;gap:.8rem;background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;padding:.78rem 1rem;text-align:left;color:var(--text);font-size:.87rem;line-height:1.5;width:100%;transition:all .2s}
+.opt:hover:not(:disabled){border-color:var(--gold);background:rgba(245,166,35,.06)}
+.opt:disabled{cursor:default}
+.opt.ok{border-color:var(--green);background:rgba(46,213,115,.1);color:var(--green)}
+.opt.no{border-color:var(--red);background:rgba(255,71,87,.1);color:var(--red)}
+.opt:active:not(:disabled){transform:scale(.98)}
+.olbl{min-width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.67rem;font-weight:700;flex-shrink:0}
+.expbox{background:rgba(0,212,170,.07);border:1px solid rgba(0,212,170,.2);border-radius:10px;padding:.9rem 1rem;margin-top:.9rem;font-size:.82rem;color:var(--muted);line-height:1.6}
+.expbox b{color:var(--teal)}
+.qnav{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.6rem}
+
+/* ══════════════════════════════════════════════
+   BUTTONS
+══════════════════════════════════════════════ */
+.btn{font-family:'Nunito',sans-serif;font-weight:700;font-size:.85rem;padding:.65rem 1.3rem;border-radius:10px;display:inline-flex;align-items:center;gap:.4rem;transition:all .2s}
+.btn-p{background:linear-gradient(135deg,var(--gold),#e8920a);color:#0a0c14}
+.btn-g{background:transparent;border:1.5px solid var(--border);color:var(--text)}
+.btn-s{background:transparent;border:1.5px solid var(--border);color:var(--muted);font-size:.77rem;padding:.5rem .9rem}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn:active{transform:scale(.97)}
+
+/* ══════════════════════════════════════════════
+   RESULTS
+══════════════════════════════════════════════ */
+.rwrap{text-align:center;padding:1.5rem 0}
+.sring{width:130px;height:130px;border-radius:50%;border:4px solid var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1.3rem;background:radial-gradient(circle,rgba(245,166,35,.08),transparent)}
+.spct{font-family:'Rajdhani',sans-serif;font-size:2.6rem;font-weight:700;color:var(--gold);line-height:1}
+.slb{font-size:.63rem;color:var(--muted)}
+.rtitle{font-family:'Rajdhani',sans-serif;font-size:1.7rem;font-weight:700;margin-bottom:.3rem}
+.rsub{color:var(--muted);font-size:.85rem;margin-bottom:1.6rem}
+.rstats{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1.6rem}
+.rst{background:var(--surf);border:1.5px solid var(--border);border-radius:12px;padding:.9rem;text-align:center}
+.rsn{font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700}
+.rsn.c{color:var(--green)}.rsn.w{color:var(--red)}.rsn.s{color:var(--muted)}
+.rsl{font-size:.63rem;color:var(--muted);margin-top:2px}
+.ract{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
+
+/* ══════════════════════════════════════════════
+   VOCAB BAR  (2 words)
+══════════════════════════════════════════════ */
+.vbar{background:linear-gradient(135deg,rgba(155,89,182,.12),rgba(232,67,147,.08));border:1px solid rgba(155,89,182,.25);border-radius:var(--r);padding:1rem 1.2rem;margin-top:1.5rem}
+.vbar-title{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:.9rem}
+.vwords{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+@media(max-width:480px){.vwords{grid-template-columns:1fr}}
+.vw{background:rgba(0,0,0,.2);border-radius:10px;padding:.75rem .85rem}
+.vw-word{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:1px;color:#b39ddb;margin-bottom:.2rem}
+.vw-en{font-size:.73rem;color:var(--muted);margin-bottom:.18rem;line-height:1.4}
+.vw-hi{font-size:.73rem;color:#ce93d8;line-height:1.4}
+.vw-ex{font-size:.65rem;color:var(--muted);margin-top:.3rem;font-style:italic;border-top:1px solid rgba(255,255,255,.06);padding-top:.3rem}
+
+/* ══════════════════════════════════════════════
+   MISC
+══════════════════════════════════════════════ */
+.b80{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.54rem;letter-spacing:1px;padding:2px 6px;border-radius:4px;background:rgba(245,166,35,.13);color:var(--gold);vertical-align:middle;margin-left:5px}
+.tipbox{background:rgba(245,166,35,.05);border:1px solid rgba(245,166,35,.14);border-radius:10px;padding:.8rem 1rem;margin-bottom:1rem;font-size:.8rem;color:var(--muted);display:flex;gap:.6rem}
+.tipbox b{color:var(--gold)}
+.row-btns{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
+
+/* ══════════════════════════════════════════════
+   LOADING OVERLAY
+══════════════════════════════════════════════ */
+#loader{display:none;position:fixed;inset:0;background:rgba(10,12,20,.88);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:1.2rem;backdrop-filter:blur(6px)}
+#loader.on{display:flex}
+.lo{position:relative;width:64px;height:64px}
+.lo .r{position:absolute;inset:0;border-radius:50%;border:2px solid transparent}
+.lo .r:nth-child(1){border-top-color:var(--gold);animation:spin 1s linear infinite}
+.lo .r:nth-child(2){inset:10px;border-right-color:var(--pink);animation:spin 1.6s linear infinite reverse}
+.lo .r:nth-child(3){inset:20px;border-bottom-color:var(--teal);animation:spin .85s linear infinite}
+.lo .dot{position:absolute;inset:28px;background:var(--gold);border-radius:50%;animation:pulse .9s ease-in-out infinite}
+.ltxt{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:1.5px;text-align:center}
+.lsub{font-size:.73rem;color:var(--muted);text-align:center;max-width:220px;line-height:1.5}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+
+/* Mobile tweaks */
+@media(max-width:600px){
+  #app{padding:1.2rem .85rem 5rem}
+  .hero h1{font-size:1.9rem}
+  .qtext{font-size:.88rem}
+  .opt{font-size:.82rem;padding:.7rem .85rem}
+  .qtop{gap:.6rem}
+  .rstats{gap:.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     SPLASH
+══════════════════════════════ -->
+<div id="splash">
+  <div class="sp-logo">PYQ<span>Master</span></div>
+  <div class="orbit">
+    <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    <div class="core"></div>
+  </div>
+  <div class="sp-txt">Loading AI Engine...</div>
+  <div class="sp-tag">🇮🇳 Powered by <b>Claude AI</b></div>
+</div>
+
+<!-- ══════════════════════════════
+     LANGUAGE SELECT
+══════════════════════════════ -->
+<div id="lang-screen">
+  <div class="ls-logo">PYQ<span>Master</span></div>
+  <div class="ls-sub">🇮🇳 India's AI-Powered Exam Prep Engine</div>
+  <div class="ls-title">Choose Your <span class="hi">Language</span><br>अपनी भाषा चुनें</div>
+  <div class="ls-desc">Select medium for questions, options &amp; explanations<br>प्रश्न, विकल्प और स्पष्टीकरण की भाषा चुनें</div>
+  <div class="lang-cards">
+    <div class="lc en" onclick="pickLang('en')" tabindex="0" role="button">
+      <span class="lc-flag">🇬🇧</span>
+      <div class="lc-name">ENGLISH</div>
+      <div class="lc-nat">English Medium</div>
+      <div class="lc-desc">Questions &amp; answers in English</div>
+      <div class="lc-badge">ENGLISH MEDIUM</div>
+    </div>
+    <div class="lc hi" onclick="pickLang('hi')" tabindex="0" role="button">
+      <span class="lc-flag">🇮🇳</span>
+      <div class="lc-name">हिंदी</div>
+      <div class="lc-nat">Hindi Medium</div>
+      <div class="lc-desc">प्रश्न और उत्तर हिंदी में</div>
+      <div class="lc-badge">हिंदी माध्यम</div>
+    </div>
+  </div>
+  <div class="ls-foot">Switch anytime • आप कभी भी बदल सकते हैं</div>
+</div>
+
+<!-- ══════════════════════════════
+     HEADER
+══════════════════════════════ -->
+<header id="hdr">
+  <a class="logo" href="#" onclick="goHome();return false">PYQ<span>Master</span></a>
+  <div class="hdr-r">
+    <button class="lang-btn" id="lbtn" onclick="switchLang()">🌐 EN</button>
+  </div>
+</header>
+
+<!-- ══════════════════════════════
+     APP
+══════════════════════════════ -->
+<div id="app">
+
+  <!-- HOME -->
+  <div class="scr" id="s-home">
+    <div class="hero">
+      <div class="hero-tag" id="htag">🇮🇳 India's #1 AI Exam Prep</div>
+      <h1 id="hh1">Crack Any Exam with <em>Real PYQs</em></h1>
+      <p class="hero-p" id="hp">AI-generated practice with 50% real PYQs. NDA, CDS, UPSC, JEE, NEET, CUET, SSC &amp; 40+ exams.</p>
+      <div class="stats">
+        <div class="st"><div class="st-n">40+</div><div class="st-l" id="sl1">Exams</div></div>
+        <div class="st"><div class="st-n">50K+</div><div class="st-l" id="sl2">PYQs</div></div>
+        <div class="st"><div class="st-n">∞</div><div class="st-l" id="sl3">Attempts</div></div>
+        <div class="st"><div class="st-n">5 Yr</div><div class="st-l" id="sl4">Cutoffs</div></div>
+      </div>
+      <div class="srch">
+        <span class="srch-ic">🔍</span>
+        <input type="search" id="si" placeholder="Search exam — NDA, UPSC, JEE, NEET..." oninput="searchEx(this.value)">
+      </div>
+    </div>
+    <div class="sec-lbl" id="catlbl">Browse by Category</div>
+    <div class="cats" id="catrow"></div>
+    <div class="egrid" id="egrid"></div>
+    <div class="vbar" id="vbar-home">
+      <div class="vbar-title">📚 Vocab Corner — Important for NDA / CDS / CUET / UPSC</div>
+      <div class="vwords" id="vwords-home"></div>
+    </div>
+  </div>
+
+  <!-- EXAM INFO -->
+  <div class="scr" id="s-info">
+    <button class="back btn" id="bi" onclick="go('s-home')">← Back</button>
+    <div class="exam-banner" id="ebanner">
+      <div class="eb-title" id="etitle"></div>
+      <div class="eb-sub"   id="esub"></div>
+      <div class="meta-row" id="emeta"></div>
+    </div>
+    <div class="igrid">
+      <div class="icard"><div class="ict" id="swt">📊 Subject Weightage</div><div id="sbars"></div></div>
+      <div class="icard"><div class="ict" id="dit">🎯 Difficulty Level</div><div id="dwrap"></div></div>
+    </div>
+    <div class="icard" style="margin-bottom:1rem">
+      <div class="ict" id="cot">📅 Previous 5-Year Cutoffs</div>
+      <table class="ctbl" id="ctbl"></table>
+    </div>
+    <div class="abox">
+      <h3 id="pt">How do you want to practice?</h3>
+      <p  id="pd">Both modes include 50% PYQs + 50% AI questions</p>
+      <div class="agrid">
+        <button class="abtn pri" id="mock-btn" onclick="startMock()">
+          <span class="ab-ico">⚡</span>
+          <div class="ab-t" id="mbt">Full Mock Test</div>
+          <div class="ab-d" id="mbd">50 mixed Qs, timed, all subjects</div>
+        </button>
+        <button class="abtn sec" id="subj-btn" onclick="goSubj();go('s-subj')">
+          <span class="ab-ico">📚</span>
+          <div class="ab-t" id="sbt">Subject-wise Practice</div>
+          <div class="ab-d" id="sbd">Pick subjects or chapters to focus</div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBJECT PICK -->
+  <div class="scr" id="s-subj">
+    <button class="back btn" onclick="go('s-info')">← <span id="bslbl">Back</span></button>
+    <h2 style="font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:.3rem" id="sptitle">Choose Subjects</h2>
+    <p style="color:var(--muted);font-size:.82rem;margin-bottom:1rem" id="spinfo">Subjects marked <span class="b80">80/20</span> carry highest weightage</p>
+    <div class="sgrid" id="sgrid"></div>
+    <div class="row-btns">
+      <button class="btn btn-p" id="snext" onclick="buildChaps()" disabled>Continue →</button>
+      <button class="btn btn-g" id="sall"  onclick="allSubj()">Select All</button>
+    </div>
+  </div>
+
+  <!-- CHAPTER PICK -->
+  <div class="scr" id="s-chap">
+    <button class="back btn" onclick="go('s-subj')">← <span id="bclbl">Back</span></button>
+    <h2 style="font-family:'Rajdhani',sans-serif;font-size:1.4rem;font-weight:700;margin-bottom:.3rem" id="chtitle">Select Chapters</h2>
+    <p style="color:var(--muted);font-size:.82rem;margin-bottom:.8rem" id="chinfo">Leave all unselected to practice all chapters</p>
+    <div class="tipbox"><span>💡</span><span id="tip"></span></div>
+    <div class="clist" id="clist"></div>
+    <div class="row-btns">
+      <button class="btn btn-p" onclick="startSub()" id="startbtn">Start Practice (50 Qs) →</button>
+      <button class="btn btn-g" onclick="allChaps()" id="allchap">Select All Chapters</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="scr" id="s-quiz">
+    <button class="back btn" onclick="quit()" id="qbtn">✕ Quit</button>
+    <div class="qtop">
+      <div class="qi">
+        <div class="qi-m" id="qml">MOCK TEST</div>
+        <div class="qi-e" id="qel">NDA 2025</div>
+      </div>
+      <div class="qpbar"><div class="qpfill" id="qpf" style="width:0%"></div></div>
+      <div class="qnums"><b id="qcur">1</b>/<span id="qtot">50</span></div>
+      <div class="timer" id="tmr">60:00</div>
+    </div>
+    <div class="qcard">
+      <div class="qbadge pyq" id="qbdg">📜 PYQ</div>
+      <div class="qnum" id="qnum">Question 1 of 50</div>
+      <div class="qtext" id="qtxt"></div>
+      <div class="opts"  id="opts"></div>
+      <div class="expbox" id="expbox" style="display:none"></div>
+    </div>
+    <div class="qnav">
+      <button class="btn btn-s" id="skipbtn" onclick="skipQ()">Skip →</button>
+      <div style="display:flex;gap:.6rem">
+        <button class="btn btn-g" id="prevbtn" onclick="prevQ()" disabled>← Prev</button>
+        <button class="btn btn-p" id="nextbtn" onclick="nextQ()">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="scr" id="s-res">
+    <div class="rwrap">
+      <div class="sring"><div class="spct" id="rpct">0%</div><div class="slb" id="rlbl">Score</div></div>
+      <div class="rtitle" id="rtitle"></div>
+      <div class="rsub"   id="rsub"></div>
+      <div class="rstats">
+        <div class="rst"><div class="rsn c" id="rc">0</div><div class="rsl" id="rcl">Correct</div></div>
+        <div class="rst"><div class="rsn w" id="rw">0</div><div class="rsl" id="rwl">Wrong</div></div>
+        <div class="rst"><div class="rsn s" id="rs">0</div><div class="rsl" id="rsl2">Skipped</div></div>
+      </div>
+      <div class="ract">
+        <button class="btn btn-p" onclick="retry()" id="rbtn">🔄 New Attempt</button>
+        <button class="btn btn-g" onclick="goHome()" id="hbtn">🏠 Home</button>
+        <button class="btn btn-g" onclick="go('s-info')" id="dbtn">📊 Exam Info</button>
+      </div>
+    </div>
+    <div class="vbar" id="vbar-res">
+      <div class="vbar-title">📚 Vocab Corner — Keep Building Your Word Power!</div>
+      <div class="vwords" id="vwords-res"></div>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<!-- LOADING -->
+<div id="loader">
+  <div class="lo"><div class="r"></div><div class="r"></div><div class="r"></div><div class="dot"></div></div>
+  <div class="ltxt" id="ltxt">GENERATING QUESTIONS...</div>
+  <div class="lsub" id="lsub">This takes 10–20 seconds. Hang tight!</div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// CONFIG  — edit ONLY this section before deploying
+// ════════════════════════════════════════════════════════
+const CFG = {
+  // After deploying on Vercel this stays as "/api/generate"
+  // It automatically points to your backend
+  API: "/api/generate",
+};
+
+// ════════════════════════════════════════════════════════
+// VOCAB  — 2 words shown at a time from this pool
+// ════════════════════════════════════════════════════════
+const VOCAB = [
+  {
+    word:"PERSPICACIOUS",
+    en:"Having sharp insight and quick understanding of complex situations",
+    hi:"तीव्र बुद्धि वाला — जो किसी भी स्थिति को जल्दी समझ ले",
+    ex:"The perspicacious officer identified the flaw in the plan immediately. (NDA/CDS Essay)"
+  },
+  {
+    word:"ASSIDUOUS",
+    en:"Showing constant diligence and hardworking effort in all tasks",
+    hi:"परिश्रमी / लगनशील — हर काम में लगातार मेहनत करने वाला",
+    ex:"Assiduous preparation separates toppers from the rest. (UPSC/SSC motivational context)"
+  },
+  {
+    word:"EPHEMERAL",
+    en:"Lasting for a very short time; transitory and short-lived",
+    hi:"क्षणभंगुर — जो बहुत थोड़े समय के लिए हो, अस्थायी",
+    ex:"Fame is ephemeral but knowledge is eternal. (CUET/CLAT RC passage type)"
+  },
+  {
+    word:"SAGACIOUS",
+    en:"Having keen practical wisdom and good judgment in all matters",
+    hi:"बुद्धिमान / विवेकशील — व्यावहारिक ज्ञान और अच्छी समझ रखने वाला",
+    ex:"A sagacious leader anticipates problems before they arise. (NDA/CDS GK)"
+  },
+  {
+    word:"ENERVATE",
+    en:"To weaken or drain someone of energy, vitality, or strength",
+    hi:"निर्बल करना / शक्तिहीन करना — किसी की ऊर्जा और शक्ति छीनना",
+    ex:"Prolonged heat enervated the soldiers during the march. (CDS/AFCAT English)"
+  },
+  {
+    word:"INTREPID",
+    en:"Fearless and adventurous; bold and daring in the face of danger",
+    hi:"निडर / साहसी — खतरे के सामने भी बेखौफ और हिम्मतवाला",
+    ex:"The intrepid pilot completed the mission despite severe weather. (NDA/AFCAT)"
+  },
+  {
+    word:"PROPITIOUS",
+    en:"Giving or indicating a good chance of success; favorably inclined",
+    hi:"अनुकूल / शुभ — जो सफलता के लिए सहायक या अनुकूल हो",
+    ex:"Conditions were propitious for the launch of the new policy. (UPSC/CLAT)"
+  },
+  {
+    word:"EQUANIMITY",
+    en:"Mental calmness and composure, especially in difficult situations",
+    hi:"समभाव / मानसिक शांति — कठिन परिस्थितियों में भी शांत रहने की क्षमता",
+    ex:"The commandant faced the crisis with remarkable equanimity. (CDS/NDA essay)"
+  },
+  {
+    word:"RECALCITRANT",
+    en:"Having an obstinately uncooperative attitude toward authority",
+    hi:"हठी / अड़ियल — जो किसी के कहे पर न चले, जिद्दी",
+    ex:"The recalcitrant prisoner refused to comply with any orders. (UPSC/SSC)"
+  },
+  {
+    word:"TENACIOUS",
+    en:"Holding firmly to a purpose; very determined and persistent",
+    hi:"दृढ़निश्चयी / अटल — अपने लक्ष्य पर डटे रहने वाला, हार न मानने वाला",
+    ex:"Tenacious students eventually crack even the toughest exams. (CUET/CLAT)"
+  },
+  {
+    word:"LOQUACIOUS",
+    en:"Tending to talk a great deal; talkative and fond of conversation",
+    hi:"बातूनी / वाचाल — जो बहुत ज़्यादा बात करे",
+    ex:"His loquacious nature made him popular at debates but unfocused in exams. (SSC/NDA)"
+  },
+  {
+    word:"INIMICAL",
+    en:"Tending to obstruct or harm; hostile and unfriendly to interests",
+    hi:"विरोधी / हानिकारक — जो किसी के हित के विरुद्ध या शत्रुतापूर्ण हो",
+    ex:"Corruption is inimical to national development. (UPSC Essay/CDS GK)"
+  },
+  {
+    word:"EBULLIENT",
+    en:"Cheerful and full of energy; enthusiastically expressing joy",
+    hi:"उत्साही / जोशपूर्ण — खुशी और उत्साह से भरा हुआ",
+    ex:"The ebullient crowd celebrated the victory with great fervor. (CUET English)"
+  },
+  {
+    word:"OBSEQUIOUS",
+    en:"Excessively compliant or subservient; overly eager to please",
+    hi:"चापलूस / खुशामदी — जो हद से ज़्यादा सेवाभावी या जी-हुज़ूर हो",
+    ex:"An obsequious attitude may please superiors but harms integrity. (NDA/CDS essay)"
+  },
+  {
+    word:"VICARIOUS",
+    en:"Experienced through another person's actions rather than your own",
+    hi:"परोक्ष / दूसरे के अनुभव से प्राप्त — जो खुद न करके दूसरे के द्वारा अनुभव किया जाए",
+    ex:"He lived his sports dreams vicariously through his son. (CUET Reading Comprehension)"
+  },
+  {
+    word:"AMELIORATE",
+    en:"To make a bad or unsatisfactory situation better; to improve",
+    hi:"सुधारना / बेहतर बनाना — किसी बुरी स्थिति को बेहतर करना",
+    ex:"Government schemes aim to ameliorate rural poverty. (UPSC/SSC GK, Social Awareness)"
+  },
+];
+
+// ════════════════════════════════════════════════════════
+// EXAM DATABASE
+// ════════════════════════════════════════════════════════
+const EXAMS = [
+  {id:'nda', name:'NDA', org:'UPSC', cat:'defence', icon:'🪖', color:'#f5a623', emoji:'🪖',
+   desc:'National Defence Academy & Naval Academy Examination',
+   totalQ:270, time:'5 hrs', marks:900,
+   meta:[{l:'Questions',v:'270'},{l:'Marks',v:'900'},{l:'Duration',v:'5 Hrs'},{l:'Neg. Marks',v:'-0.33'}],
+   subjects:[
+     {name:'Mathematics',icon:'📐',ch:10,weight:40,color:'#f5a623',top:true,chapters:['Sets & Functions','Trigonometry','Algebra','Matrices','Differential Calculus','Integral Calculus','Vector Algebra','Statistics','Probability','Quadratic Equations']},
+     {name:'English',icon:'📝',ch:8,weight:22,color:'#1e90ff',top:true,chapters:['Reading Comprehension','Error Spotting','Vocabulary','Fill in Blanks','Sentence Improvement','Antonyms/Synonyms','One Word Substitution','Idioms & Phrases']},
+     {name:'General Knowledge',icon:'🌍',ch:7,weight:20,color:'#2ed573',top:false,chapters:['Current Affairs','History','Geography','Physics','Chemistry','Biology','Polity']},
+     {name:'Physics',icon:'⚛️',ch:6,weight:10,color:'#e84393',top:false,chapters:['Mechanics','Heat & Thermodynamics','Optics','Electricity','Magnetism','Modern Physics']},
+     {name:'Chemistry',icon:'🧪',ch:4,weight:8,color:'#a29bfe',top:false,chapters:['Organic Chemistry','Inorganic Chemistry','Physical Chemistry','Chemical Bonding']},
+   ],
+   cutoffs:[{y:'2024',g:'361'},{y:'2023',g:'342'},{y:'2022',g:'360'},{y:'2021',g:'343'},{y:'2020',g:'355'}],
+   diff:[{l:'Easy',p:25,c:'#2ed573'},{l:'Moderate',p:50,c:'#f5a623'},{l:'Hard',p:25,c:'#ff4757'}]},
+
+  {id:'cds', name:'CDS', org:'UPSC', cat:'defence', icon:'⚔️', color:'#e84393', emoji:'⚔️',
+   desc:'Combined Defence Services Examination',
+   totalQ:300, time:'6 hrs', marks:300,
+   meta:[{l:'Questions',v:'300'},{l:'Marks',v:'300'},{l:'Duration',v:'6 Hrs'},{l:'Papers',v:'3'}],
+   subjects:[
+     {name:'English',icon:'📝',ch:8,weight:35,color:'#1e90ff',top:true,chapters:['Spotting Errors','Sentence Arrangements','Comprehension','Vocabulary','Fill in Blanks','Ordering Words','Selecting Words','Antonyms/Synonyms']},
+     {name:'General Knowledge',icon:'🌍',ch:8,weight:35,color:'#2ed573',top:true,chapters:['Current Affairs','Indian History','Geography','Polity','Economy','Science','Awards','Sports']},
+     {name:'Elementary Mathematics',icon:'📐',ch:7,weight:30,color:'#f5a623',top:true,chapters:['Number System','Algebra','Geometry','Mensuration','Statistics','Time & Work','Profit & Loss']},
+   ],
+   cutoffs:[{y:'2024',g:'142'},{y:'2023',g:'138'},{y:'2022',g:'145'},{y:'2021',g:'131'},{y:'2020',g:'127'}],
+   diff:[{l:'Easy',p:30,c:'#2ed573'},{l:'Moderate',p:45,c:'#f5a623'},{l:'Hard',p:25,c:'#ff4757'}]},
+
+  {id:'afcat', name:'AFCAT', org:'Indian Air Force', cat:'defence', icon:'✈️', color:'#1e90ff', emoji:'✈️',
+   desc:'Air Force Common Admission Test',
+   totalQ:100, time:'2 hrs', marks:300,
+   meta:[{l:'Questions',v:'100'},{l:'Marks',v:'300'},{l:'Duration',v:'2 Hrs'},{l:'Neg. Marks',v:'-1'}],
+   subjects:[
+     {name:'General Awareness',icon:'🌐',ch:5,weight:30,color:'#2ed573',top:true,chapters:['Current Affairs','IAF History','Famous Personalities','Sports','Science & Tech']},
+     {name:'Verbal Ability',icon:'💬',ch:5,weight:30,color:'#1e90ff',top:true,chapters:['Comprehension','Vocabulary','Antonyms & Synonyms','Error Detection','Fill Blanks']},
+     {name:'Numerical Ability',icon:'🔢',ch:4,weight:20,color:'#f5a623',top:false,chapters:['HCF/LCM','Fractions','Averages','Percentages']},
+     {name:'Reasoning',icon:'🧠',ch:4,weight:20,color:'#e84393',top:false,chapters:['Series','Analogy','Spatial Reasoning','Pattern Recognition']},
+   ],
+   cutoffs:[{y:'2024',g:'152'},{y:'2023',g:'146'},{y:'2022',g:'153'},{y:'2021',g:'148'},{y:'2020',g:'140'}],
+   diff:[{l:'Easy',p:35,c:'#2ed573'},{l:'Moderate',p:40,c:'#f5a623'},{l:'Hard',p:25,c:'#ff4757'}]},
+
+  {id:'upsc', name:'UPSC CSE', org:'UPSC', cat:'civil', icon:'🏛️', color:'#9b59b6', emoji:'🏛️',
+   desc:'Civil Services Examination — IAS / IPS / IFS',
+   totalQ:200, time:'2 hrs', marks:400,
+   meta:[{l:'Prelims Qs',v:'200'},{l:'Marks',v:'400'},{l:'Duration',v:'2 Hrs'},{l:'Neg. Marks',v:'-0.33'}],
+   subjects:[
+     {name:'Indian Polity',icon:'🗳️',ch:9,weight:22,color:'#9b59b6',top:true,chapters:['Constitution Basics','Fundamental Rights','DPSP','Parliament','Judiciary','President & VP','State Government','Local Bodies','Amendments']},
+     {name:'Indian History',icon:'🏺',ch:8,weight:20,color:'#e67e22',top:true,chapters:['Ancient India','Medieval India','Modern India','Freedom Movement','Post Independence','Cultural Heritage','Art & Architecture','Socio-Religious Movements']},
+     {name:'Geography',icon:'🗺️',ch:7,weight:18,color:'#2ed573',top:true,chapters:['Indian Geography','World Geography','Physical Geography','Human Geography','Environment','Economic Geography','Disaster Management']},
+     {name:'Economy',icon:'💹',ch:6,weight:15,color:'#f5a623',top:false,chapters:['Basics of Economy','Planning','Agriculture','Industry','Banking & Finance','Foreign Trade','Budget & Taxation']},
+     {name:'Science & Tech',icon:'🔬',ch:5,weight:12,color:'#1e90ff',top:false,chapters:['Physics in Daily Life','Biology & Health','Space Technology','Defence Technology','IT & AI']},
+     {name:'Environment',icon:'🌱',ch:4,weight:13,color:'#00d4aa',top:false,chapters:['Ecology','Biodiversity','Climate Change','Pollution','Conservation','International Agreements']},
+   ],
+   cutoffs:[{y:'2024',g:'102'},{y:'2023',g:'98'},{y:'2022',g:'105'},{y:'2021',g:'87'},{y:'2020',g:'92'}],
+   diff:[{l:'Easy',p:20,c:'#2ed573'},{l:'Moderate',p:40,c:'#f5a623'},{l:'Hard',p:40,c:'#ff4757'}]},
+
+  {id:'ibps', name:'IBPS PO', org:'IBPS', cat:'banking', icon:'🏦', color:'#00d4aa', emoji:'🏦',
+   desc:'Institute of Banking Personnel Selection — Probationary Officer',
+   totalQ:100, time:'60 min', marks:100,
+   meta:[{l:'Prelims Qs',v:'100'},{l:'Marks',v:'100'},{l:'Duration',v:'60 Min'},{l:'Neg. Marks',v:'-0.25'}],
+   subjects:[
+     {name:'Quantitative Aptitude',icon:'🔢',ch:8,weight:35,color:'#f5a623',top:true,chapters:['Number Series','Simplification','Data Interpretation','Quadratic Equations','Arithmetic','Profit & Loss','Time & Work','Mixtures']},
+     {name:'Reasoning Ability',icon:'🧠',ch:7,weight:35,color:'#1e90ff',top:true,chapters:['Puzzles & Seating','Syllogism','Coding-Decoding','Blood Relations','Direction Test','Inequality','Input-Output']},
+     {name:'English Language',icon:'📖',ch:6,weight:30,color:'#e84393',top:true,chapters:['Reading Comprehension','Error Detection','Sentence Completion','Para Jumbles','Vocabulary','Cloze Test']},
+   ],
+   cutoffs:[{y:'2024',g:'57.5'},{y:'2023',g:'56.25'},{y:'2022',g:'58.75'},{y:'2021',g:'55'},{y:'2020',g:'52.5'}],
+   diff:[{l:'Easy',p:25,c:'#2ed573'},{l:'Moderate',p:50,c:'#f5a623'},{l:'Hard',p:25,c:'#ff4757'}]},
+
+  {id:'sbi', name:'SBI PO', org:'State Bank of India', cat:'banking', icon:'💳', color:'#3498db', emoji:'💳',
+   desc:'State Bank of India — Probationary Officer Recruitment',
+   totalQ:100, time:'60 min', marks:100,
+   meta:[{l:'Prelims Qs',v:'100'},{l:'Marks',v:'100'},{l:'Duration',v:'60 Min'},{l:'Neg. Marks',v:'-0.25'}],
+   subjects:[
+     {name:'Quantitative Aptitude',icon:'🔢',ch:8,weight:35,color:'#f5a623',top:true,chapters:['Data Interpretation','Number Series','Simplification','Quadratic Equations','Arithmetic','Mixtures','Time-Speed-Distance','Probability']},
+     {name:'Reasoning',icon:'🧠',ch:6,weight:35,color:'#9b59b6',top:true,chapters:['Puzzles','Seating Arrangement','Syllogism','Coding-Decoding','Inequality','Blood Relations']},
+     {name:'English',icon:'📖',ch:5,weight:30,color:'#2ed573',top:true,chapters:['Reading Comprehension','Cloze Test','Para Jumbles','Error Detection','Sentence Improvement']},
+   ],
+   cutoffs:[{y:'2024',g:'60'},{y:'2023',g:'58.5'},{y:'2022',g:'61'},{y:'2021',g:'57'},{y:'2020',g:'55'}],
+   diff:[{l:'Easy',p:20,c:'#2ed573'},{l:'Moderate',p:50,c:'#f5a623'},{l:'Hard',p:30,c:'#ff4757'}]},
+
+  {id:'jee', name:'JEE Main', org:'NTA', cat:'engineering', icon:'⚙️', color:'#e84393', emoji:'⚙️',
+   desc:'Joint Entrance Examination — B.Tech / B.E. Admissions',
+   totalQ:90, time:'3 hrs', marks:300,
+   meta:[{l:'Questions',v:'90'},{l:'Marks',v:'300'},{l:'Duration',v:'3 Hrs'},{l:'Neg. Marks',v:'-1'}],
+   subjects:[
+     {name:'Mathematics',icon:'📐',ch:12,weight:34,color:'#f5a623',top:true,chapters:['Coordinate Geometry','Calculus','Algebra','Trigonometry','Probability','Vectors','3D Geometry','Matrices','Statistics','Binomial Theorem','Sequences','Sets & Relations']},
+     {name:'Physics',icon:'⚛️',ch:10,weight:33,color:'#1e90ff',top:true,chapters:['Mechanics','Electrostatics','Current Electricity','Magnetism','Optics','Modern Physics','Waves','Thermodynamics','Fluid Mechanics','Semiconductors']},
+     {name:'Chemistry',icon:'🧪',ch:10,weight:33,color:'#2ed573',top:true,chapters:['Physical Chemistry','Organic Chemistry','Inorganic Chemistry','Equilibrium','Electrochemistry','Coordination Compounds','d-f block','Polymers','Biomolecules','Surface Chemistry']},
+   ],
+   cutoffs:[{y:'2024',g:'89.7 %ile'},{y:'2023',g:'88.4 %ile'},{y:'2022',g:'88.4 %ile'},{y:'2021',g:'87.9 %ile'},{y:'2020',g:'90.4 %ile'}],
+   diff:[{l:'Easy',p:30,c:'#2ed573'},{l:'Moderate',p:40,c:'#f5a623'},{l:'Hard',p:30,c:'#ff4757'}]},
+
+  {id:'neet', name:'NEET UG', org:'NTA', cat:'medical', icon:'🩺', color:'#2ed573', emoji:'🩺',
+   desc:'National Eligibility cum Entrance Test — MBBS / BDS',
+   totalQ:200, time:'3h 20m', marks:720,
+   meta:[{l:'Questions',v:'200'},{l:'Marks',v:'720'},{l:'Duration',v:'3h 20m'},{l:'Neg. Marks',v:'-1'}],
+   subjects:[
+     {name:'Biology (Botany)',icon:'🌿',ch:10,weight:25,color:'#2ed573',top:true,chapters:['Cell Biology','Plant Physiology','Reproduction in Plants','Genetics','Ecology','Plant Diversity','Morphology','Anatomy','Plant Hormones','Biomolecules']},
+     {name:'Biology (Zoology)',icon:'🦁',ch:10,weight:25,color:'#00d4aa',top:true,chapters:['Animal Kingdom','Human Physiology','Reproduction','Genetics & Evolution','Human Health','Biotechnology','Ecosystem','Biodiversity','Animal Tissues','Excretion']},
+     {name:'Chemistry',icon:'🧪',ch:10,weight:25,color:'#e84393',top:true,chapters:['Organic Chemistry','Coordination Compounds','d-block Elements','Chemical Bonding','Equilibrium','Electrochemistry','Biomolecules','Polymers','Thermodynamics','p-block']},
+     {name:'Physics',icon:'⚛️',ch:8,weight:25,color:'#1e90ff',top:false,chapters:['Mechanics','Optics','Electrostatics','Current Electricity','Magnetism','Modern Physics','Thermodynamics','Waves']},
+   ],
+   cutoffs:[{y:'2024',g:'720-137'},{y:'2023',g:'720-136'},{y:'2022',g:'715-117'},{y:'2021',g:'720-138'},{y:'2020',g:'720-147'}],
+   diff:[{l:'Easy',p:35,c:'#2ed573'},{l:'Moderate',p:40,c:'#f5a623'},{l:'Hard',p:25,c:'#ff4757'}]},
+
+  {id:'ssc', name:'SSC CGL', org:'Staff Selection Commission', cat:'ssc', icon:'📋', color:'#f39c12', emoji:'📋',
+   desc:'Combined Graduate Level Examination — Group B & C Posts',
+   totalQ:200, time:'4 hrs', marks:800,
+   meta:[{l:'Tier-I Qs',v:'100'},{l:'Marks',v:'800'},{l:'Duration',v:'2+2 Hrs'},{l:'Neg. Marks',v:'-0.5'}],
+   subjects:[
+     {name:'Quantitative Aptitude',icon:'🔢',ch:9,weight:25,color:'#f5a623',top:true,chapters:['Data Interpretation','Arithmetic','Algebra','Geometry','Mensuration','Trigonometry','Time & Work','Ratio','HCF/LCM']},
+     {name:'English Comprehension',icon:'📖',ch:7,weight:25,color:'#1e90ff',top:true,chapters:['Reading Comprehension','Cloze Test','Fill in Blanks','Error Spotting','Para Jumbles','Synonyms/Antonyms','One Word Substitution']},
+     {name:'General Awareness',icon:'🌐',ch:7,weight:25,color:'#2ed573',top:true,chapters:['Static GK','Current Affairs','History','Polity','Geography','Economy','Science']},
+     {name:'General Intelligence',icon:'🧠',ch:6,weight:25,color:'#9b59b6',top:false,chapters:['Analogy','Series','Classification','Matrix','Venn Diagrams','Direction Sense']},
+   ],
+   cutoffs:[{y:'2024',g:'155'},{y:'2023',g:'148'},{y:'2022',g:'159'},{y:'2021',g:'152'},{y:'2020',g:'145'}],
+   diff:[{l:'Easy',p:35,c:'#2ed573'},{l:'Moderate',p:45,c:'#f5a623'},{l:'Hard',p:20,c:'#ff4757'}]},
+
+  {id:'rrb', name:'RRB NTPC', org:'Railway Recruitment Board', cat:'ssc', icon:'🚂', color:'#e74c3c', emoji:'🚂',
+   desc:'Non-Technical Popular Categories — Railway Group C',
+   totalQ:150, time:'90 min', marks:150,
+   meta:[{l:'CBT-1 Qs',v:'100'},{l:'Marks',v:'100'},{l:'Duration',v:'90 Min'},{l:'Neg. Marks',v:'-1/3'}],
+   subjects:[
+     {name:'General Awareness',icon:'🌐',ch:6,weight:40,color:'#2ed573',top:true,chapters:['Current Affairs','Indian Railways','History','Geography','Polity','Science']},
+     {name:'Mathematics',icon:'📐',ch:6,weight:30,color:'#f5a623',top:true,chapters:['Number System','Arithmetic','Algebra','Geometry','Mensuration','Statistics']},
+     {name:'General Intelligence',icon:'🧠',ch:5,weight:30,color:'#1e90ff',top:true,chapters:['Analogy','Classification','Series','Coding-Decoding','Puzzles']},
+   ],
+   cutoffs:[{y:'2024',g:'72'},{y:'2023',g:'70'},{y:'2022',g:'73'},{y:'2021',g:'68'},{y:'2020',g:'65'}],
+   diff:[{l:'Easy',p:40,c:'#2ed573'},{l:'Moderate',p:40,c:'#f5a623'},{l:'Hard',p:20,c:'#ff4757'}]},
+
+  {id:'cuet', name:'CUET UG', org:'NTA', cat:'university', icon:'🎓', color:'#8e44ad', emoji:'🎓',
+   desc:'Common University Entrance Test — Central Universities',
+   totalQ:225, time:'3h 15m', marks:800,
+   meta:[{l:'Domain Qs',v:'40/sub'},{l:'Marks',v:'800'},{l:'Duration',v:'3h 15m'},{l:'Neg. Marks',v:'-1'}],
+   subjects:[
+     {name:'English Language',icon:'📝',ch:7,weight:30,color:'#1e90ff',top:true,chapters:['Reading Comprehension','Literary Aptitude','Vocabulary','Grammar','Synonyms/Antonyms','Idioms','Sentence Formation']},
+     {name:'General Test',icon:'🌐',ch:7,weight:25,color:'#2ed573',top:true,chapters:['General Knowledge','Current Affairs','Logical Reasoning','Quantitative Aptitude','Mental Ability','Numerical Aptitude','Data Interpretation']},
+     {name:'Domain Subjects',icon:'📚',ch:5,weight:45,color:'#9b59b6',top:true,chapters:['History/Political Science','Physics/Chemistry','Math/Biology','Commerce/Accountancy','Sociology/Psychology']},
+   ],
+   cutoffs:[{y:'2024',g:'595'},{y:'2023',g:'568'},{y:'2022',g:'547'},{y:'2021',g:'—'},{y:'2020',g:'—'}],
+   diff:[{l:'Easy',p:40,c:'#2ed573'},{l:'Moderate',p:40,c:'#f5a623'},{l:'Hard',p:20,c:'#ff4757'}]},
+
+  {id:'clat', name:'CLAT', org:'Consortium of NLUs', cat:'law', icon:'⚖️', color:'#d4a017', emoji:'⚖️',
+   desc:'Common Law Admission Test — National Law Universities',
+   totalQ:120, time:'2 hrs', marks:120,
+   meta:[{l:'Questions',v:'120'},{l:'Marks',v:'120'},{l:'Duration',v:'2 Hrs'},{l:'Neg. Marks',v:'-0.25'}],
+   subjects:[
+     {name:'Legal Reasoning',icon:'⚖️',ch:6,weight:25,color:'#d4a017',top:true,chapters:['Legal Principles','Application of Law','Legal GK','Constitutional Provisions','Torts','Contracts']},
+     {name:'English Language',icon:'📖',ch:6,weight:22,color:'#1e90ff',top:true,chapters:['Comprehension','Vocabulary','Grammar','Critical Reasoning','Para Summary','Sentence Correction']},
+     {name:'Current Affairs & GK',icon:'🌐',ch:5,weight:25,color:'#2ed573',top:true,chapters:['National Current Affairs','International Events','Legal Current Affairs','Awards','Books & Authors']},
+     {name:'Logical Reasoning',icon:'🧠',ch:5,weight:20,color:'#e84393',top:false,chapters:['Syllogism','Analogies','Logical Sequence','Statement-Assumption','Strengthening/Weakening']},
+     {name:'Quantitative Techniques',icon:'🔢',ch:3,weight:8,color:'#f5a623',top:false,chapters:['Basic Arithmetic','Data Interpretation','Graphs & Charts']},
+   ],
+   cutoffs:[{y:'2024',g:'72'},{y:'2023',g:'70.5'},{y:'2022',g:'68'},{y:'2021',g:'65'},{y:'2020',g:'63'}],
+   diff:[{l:'Easy',p:30,c:'#2ed573'},{l:'Moderate',p:45,c:'#f5a623'},{l:'Hard',p:25,c:'#ff4757'}]},
+];
+
+const CATS = [
+  {id:'all',label:'All Exams',icon:'🔎'},
+  {id:'defence',label:'Defence',icon:'🪖'},
+  {id:'civil',label:'Civil Services',icon:'🏛️'},
+  {id:'banking',label:'Banking',icon:'🏦'},
+  {id:'engineering',label:'Engineering',icon:'⚙️'},
+  {id:'medical',label:'Medical',icon:'🩺'},
+  {id:'ssc',label:'SSC/Railway',icon:'📋'},
+  {id:'university',label:'University',icon:'🎓'},
+  {id:'law',label:'Law',icon:'⚖️'},
+];
+
+// ════════════════════════════════════════════════════════
+// i18n STRINGS
+// ════════════════════════════════════════════════════════
+const T = {
+  en:{
+    htag:'🇮🇳 India\'s #1 AI Exam Prep', hh1:'Crack Any Exam with <em>Real PYQs</em>',
+    hp:'AI-generated practice with 50% real PYQs. NDA, CDS, UPSC, JEE, NEET, CUET, SSC & 40+ exams.',
+    sl1:'Exams',sl2:'PYQs',sl3:'Attempts',sl4:'5 Yr Cutoffs',
+    si:'Search exam — NDA, UPSC, JEE, NEET...',
+    catlbl:'Browse by Category',
+    bi:'← Back',bslbl:'Back',bclbl:'Back',
+    swt:'📊 Subject Weightage',dit:'🎯 Difficulty Level',cot:'📅 Previous 5-Year Cutoffs (General)',
+    pt:'How do you want to practice?',pd:'Both modes include 50% PYQs + 50% AI questions',
+    mbt:'Full Mock Test',mbd:'50 mixed Qs, timed, all subjects',
+    sbt:'Subject-wise Practice',sbd:'Pick subjects or chapters to focus on',
+    sptitle:'Choose Subjects',spinfo:'Subjects marked',selectall:'Select All',snext:'Continue →',
+    chtitle:'Select Chapters',chinfo:'Leave all unselected to practice all chapters',
+    tip:'<b>80/20 Tip:</b> Highlighted chapters appear in 80% of past papers. Master these first for maximum score gain.',
+    startbtn:'Start Practice (50 Qs) →',allchap:'Select All Chapters',
+    qbtn:'✕ Quit',skipbtn:'Skip →',prevbtn:'← Prev',nextbtn:'Next →',finish:'🏁 Finish',
+    ltxt:'GENERATING QUESTIONS...',lsub:'This takes 10–20 seconds. Hang tight!',
+    quitMsg:'Quit the test? Your progress will be lost.',
+    rbtn:'🔄 New Attempt (New Qs)',hbtn:'🏠 Home',dbtn:'📊 Exam Info',
+    rcl:'Correct',rwl:'Wrong',rsl2:'Skipped',rlbl:'Score',
+    thY:'Year',thG:'General Category Cutoff',thT:'Trend',
+    aiSrc:'AI Generated',
+    titles:['🏆 Outstanding!','🎯 Excellent!','✅ Good Attempt!','📈 Keep Practising!','💪 Don\'t Give Up!'],
+    rsub1:'You answered', rsub2:'out of', rsub3:'correctly',
+  },
+  hi:{
+    htag:'🇮🇳 भारत का नंबर 1 AI परीक्षा तैयारी', hh1:'किसी भी परीक्षा में सफलता — <em>असली PYQs</em> के साथ',
+    hp:'50% असली PYQs + 50% AI प्रश्न। NDA, CDS, UPSC, JEE, NEET, CUET, SSC और 40+ परीक्षाएं।',
+    sl1:'परीक्षाएं', sl2:'PYQs', sl3:'प्रयास', sl4:'5 साल Cutoff',
+    si:'परीक्षा खोजें — NDA, UPSC, JEE...',
+    catlbl:'श्रेणी के अनुसार खोजें',
+    bi:'← वापस', bslbl:'वापस', bclbl:'वापस',
+    swt:'📊 विषयवार वेटेज', dit:'🎯 कठिनाई स्तर', cot:'📅 पिछले 5 साल की कटऑफ (सामान्य)',
+    pt:'आप कैसे अभ्यास करना चाहते हैं?', pd:'दोनों में 50% PYQ + 50% AI प्रश्न होंगे',
+    mbt:'पूर्ण मॉक टेस्ट', mbd:'50 मिश्रित प्रश्न, सभी विषय, टाइम के साथ',
+    sbt:'विषयवार अभ्यास', sbd:'अपने कमजोर विषय या अध्याय चुनें',
+    sptitle:'विषय चुनें', spinfo:'चिन्हित विषय', selectall:'सभी चुनें', snext:'आगे बढ़ें →',
+    chtitle:'अध्याय चुनें', chinfo:'सभी खाली छोड़ने पर सभी अध्यायों का अभ्यास होगा',
+    tip:'<b>80/20 टिप:</b> हाइलाइट अध्याय 80% पेपरों में आते हैं। पहले इन्हें पढ़ें — अधिकतम नंबर यहीं से आएंगे।',
+    startbtn:'अभ्यास शुरू करें (50 प्रश्न) →', allchap:'सभी अध्याय चुनें',
+    qbtn:'✕ छोड़ें', skipbtn:'छोड़ें →', prevbtn:'← पिछला', nextbtn:'अगला →', finish:'🏁 समाप्त करें',
+    ltxt:'प्रश्न तैयार हो रहे हैं...', lsub:'इसमें 10–20 सेकंड लगते हैं। थोड़ा रुकें!',
+    quitMsg:'परीक्षा छोड़ें? आपकी प्रगति खो जाएगी।',
+    rbtn:'🔄 नया प्रयास (नए प्रश्न)', hbtn:'🏠 होम', dbtn:'📊 परीक्षा विवरण',
+    rcl:'सही', rwl:'गलत', rsl2:'छोड़े', rlbl:'स्कोर',
+    thY:'वर्ष', thG:'सामान्य वर्ग कटऑफ', thT:'ट्रेंड',
+    aiSrc:'AI निर्मित',
+    titles:['🏆 शानदार!','🎯 बहुत बढ़िया!','✅ अच्छा प्रयास!','📈 अभ्यास जारी रखें!','💪 हार मत मानो!'],
+    rsub1:'आपने', rsub2:'में से', rsub3:'प्रश्न सही किए',
+  }
+};
+
+// ════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════
+let S = {
+  lang:'en', exam:null, subjects:[], chapters:[],
+  questions:[], qIdx:0, answers:{}, skipped:new Set(),
+  mode:'', timer:null, timeLeft:0,
+};
+const t = k => T[S.lang][k] || T.en[k] || k;
+
+// ════════════════════════════════════════════════════════
+// SPLASH → auto-hide after fonts load
+// ════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const sp = document.getElementById('splash');
+    sp.classList.add('out');
+    setTimeout(() => {
+      sp.style.display = 'none';
+      document.getElementById('lang-screen').style.display = 'flex';
+    }, 460);
+  }, 900);
+});
+
+// ════════════════════════════════════════════════════════
+// LANGUAGE
+// ════════════════════════════════════════════════════════
+function pickLang(lang) {
+  S.lang = lang;
+  const c = document.querySelector('.lc.'+lang);
+  c.style.transform = 'scale(.95)'; c.style.opacity = '.6';
+  setTimeout(() => {
+    document.getElementById('lang-screen').style.display = 'none';
+    document.getElementById('hdr').style.display        = 'flex';
+    document.getElementById('app').style.display        = 'block';
+    document.getElementById('lbtn').textContent = lang==='hi' ? '🌐 हिं' : '🌐 EN';
+    applyT(); renderHome(); go('s-home');
+    ga('select_language','UI',lang);
+  }, 280);
+}
+
+function switchLang() {
+  if(S.timer) clearInterval(S.timer);
+  document.getElementById('app').style.display  = 'none';
+  document.getElementById('hdr').style.display  = 'none';
+  document.querySelectorAll('.lc').forEach(c=>{c.style.transform='';c.style.opacity='';});
+  document.getElementById('lang-screen').style.display = 'flex';
+}
+
+// Apply all translatable text at once — safely skips missing elements
+function applyT() {
+  // id → key mapping (where id !== key)
+  const map = {
+    htag:'htag', hh1:'hh1', hp:'hp',
+    sl1:'sl1', sl2:'sl2', sl3:'sl3', sl4:'sl4',
+    catlbl:'catlbl',
+    bi:'bi', bslbl:'bslbl', bclbl:'bclbl',
+    swt:'swt', dit:'dit', cot:'cot',
+    pt:'pt', pd:'pd',
+    mbt:'mbt', mbd:'mbd', sbt:'sbt', sbd:'sbd',
+    sptitle:'sptitle', spinfo:'spinfo',
+    snext:'snext', sall:'selectall',
+    chtitle:'chtitle', chinfo:'chinfo',
+    startbtn:'startbtn', allchap:'allchap',
+    qbtn:'qbtn', skipbtn:'skipbtn', prevbtn:'prevbtn',
+    rbtn:'rbtn', hbtn:'hbtn', dbtn:'dbtn',
+    rcl:'rcl', rwl:'rwl', rsl2:'rsl2', rlbl:'rlbl',
+  };
+  const htmlIds = new Set(['hh1','tip']);
+  Object.entries(map).forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const v = t(key);
+    if (htmlIds.has(id)) el.innerHTML = v; else el.textContent = v;
+  });
+  // Placeholder
+  const si = document.getElementById('si');
+  if (si) si.placeholder = t('si');
+  // tip element lives inside s-chap screen — only set if present
+  const tip = document.getElementById('tip');
+  if (tip) tip.innerHTML = t('tip');
+}
+
+// ════════════════════════════════════════════════════════
+// VOCAB — pick 2 random non-duplicate words
+// ════════════════════════════════════════════════════════
+function pickTwoVocab() {
+  const idx1 = Math.floor(Math.random()*VOCAB.length);
+  let idx2 = Math.floor(Math.random()*VOCAB.length);
+  while(idx2===idx1) idx2 = Math.floor(Math.random()*VOCAB.length);
+  return [VOCAB[idx1], VOCAB[idx2]];
+}
+
+function renderVocab(containerId) {
+  const [v1,v2] = pickTwoVocab();
+  document.getElementById(containerId).innerHTML = [v1,v2].map(v=>`
+    <div class="vw">
+      <div class="vw-word">${v.word}</div>
+      <div class="vw-en">EN: ${v.en}</div>
+      <div class="vw-hi">हिं: ${v.hi}</div>
+      <div class="vw-ex">${v.ex}</div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════════════
+// HOME
+// ════════════════════════════════════════════════════════
+function renderHome() {
+  applyT();
+  // Category bar
+  document.getElementById('catrow').innerHTML = CATS.map(c=>
+    `<button class="cat${c.id==='all'?' on':''}" onclick="filterCat('${c.id}',this)">${c.icon} ${c.label}</button>`
+  ).join('');
+  renderExams('all');
+  renderVocab('vwords-home');
+}
+
+function renderExams(cat) {
+  const list = cat==='all' ? EXAMS : EXAMS.filter(e=>e.cat===cat);
+  document.getElementById('egrid').innerHTML = list.map(e=>`
+    <div class="ecard" style="--ec:${e.color}" data-cat="${e.cat}" data-name="${e.name.toLowerCase()}" onclick="showExam('${e.id}')">
+      <div class="ei">${e.icon}</div>
+      <div class="en">${e.name}</div>
+      <div class="eo">${e.org}</div>
+      <div class="etags">
+        <span class="tag">${e.cat.toUpperCase()}</span>
+        <span class="tag">${e.totalQ}Q</span>
+        <span class="tag">${e.time}</span>
+      </div>
+    </div>`).join('');
+}
+
+function filterCat(cat,btn) {
+  document.querySelectorAll('.cat').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderExams(cat);
+}
+
+function searchEx(v) {
+  const q=v.toLowerCase();
+  document.querySelectorAll('.ecard').forEach(c=>{
+    c.style.display=c.dataset.name.includes(q)?'':'none';
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// EXAM INFO
+// ════════════════════════════════════════════════════════
+function showExam(id) {
+  const e = EXAMS.find(x=>x.id===id); if(!e) return;
+  S.exam = e;
+  document.getElementById('etitle').textContent = e.name;
+  document.getElementById('esub').textContent   = e.desc;
+  document.getElementById('ebanner').setAttribute('data-emoji',e.emoji);
+  document.getElementById('emeta').innerHTML = e.meta.map(m=>
+    `<div class="mi"><div class="ml">${m.l}</div><div class="mv">${m.v}</div></div>`).join('');
+  // Subject bars
+  document.getElementById('sbars').innerHTML = e.subjects.map(s=>`
+    <div class="swrap">
+      <div class="slbl">
+        <span>${s.icon} ${s.name}${s.top?` <span class="b80">80/20</span>`:''}</span>
+        <span>${s.weight}%</span>
+      </div>
+      <div class="strack"><div class="sfill" style="width:${s.weight}%;background:${s.color}"></div></div>
+    </div>`).join('');
+  // Difficulty
+  document.getElementById('dwrap').innerHTML = e.diff.map(d=>`
+    <div class="ditem">
+      <div class="ddot" style="background:${d.c}"></div>
+      <span style="min-width:64px;font-size:.8rem">${d.l}</span>
+      <div class="dbar"><div class="dbf" style="width:${d.p}%;background:${d.c}"></div></div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.69rem;color:${d.c}">${d.p}%</span>
+    </div>`).join('');
+  // Cutoff
+  document.getElementById('ctbl').innerHTML =
+    `<thead><tr><th>${t('thY')}</th><th>${t('thG')}</th><th>${t('thT')}</th></tr></thead><tbody>`+
+    e.cutoffs.map((c,i,a)=>{
+      const prev=a[i+1],curr=parseFloat(c.g),prevV=prev?parseFloat(prev.g):curr;
+      const tr=curr>prevV?'↑':curr<prevV?'↓':'→';
+      const tc=curr>prevV?'var(--green)':curr<prevV?'var(--red)':'var(--muted)';
+      return `<tr><td>${c.y}</td><td>${c.g}</td><td style="color:${tc}">${tr}</td></tr>`;
+    }).join('')+'</tbody>';
+  applyT(); go('s-info');
+  ga('view_exam','Navigation',e.name);
+}
+
+// ════════════════════════════════════════════════════════
+// SUBJECT PICK
+// ════════════════════════════════════════════════════════
+function goSubj() {
+  S.subjects=[];
+  document.getElementById('sptitle').textContent = t('sptitle')+' — '+S.exam.name;
+  document.getElementById('sgrid').innerHTML = S.exam.subjects.map((s,i)=>`
+    <div class="scard" id="sc-${i}" onclick="togSubj(${i})">
+      <div class="sc-ico">${s.icon}</div>
+      <div class="sc-n">${s.name}${s.top?` <span class="b80">80/20</span>`:''}</div>
+      <div class="sc-ch">${s.ch} ${S.lang==='hi'?'अध्याय':'chapters'}</div>
+      <div class="sc-w">${s.weight}% ${S.lang==='hi'?'वेटेज':'weightage'}</div>
+    </div>`).join('');
+  updSnext();
+}
+
+function togSubj(i) {
+  const c=document.getElementById(`sc-${i}`), s=S.exam.subjects[i];
+  const idx=S.subjects.findIndex(x=>x.name===s.name);
+  if(idx>=0){S.subjects.splice(idx,1);c.classList.remove('on');}
+  else{S.subjects.push(s);c.classList.add('on');}
+  updSnext();
+}
+function allSubj() {
+  S.subjects=[...S.exam.subjects];
+  document.querySelectorAll('.scard').forEach(c=>c.classList.add('on'));
+  updSnext();
+}
+function updSnext(){document.getElementById('snext').disabled=S.subjects.length===0;}
+
+// ════════════════════════════════════════════════════════
+// CHAPTER PICK
+// ════════════════════════════════════════════════════════
+function buildChaps() {
+  if(!S.subjects.length) return;
+  S.chapters=[];
+  const all=[];
+  S.subjects.forEach(s=>s.chapters.forEach(ch=>all.push({name:ch,subj:s.name,top:s.top})));
+  document.getElementById('chtitle').textContent = t('chtitle')+' — '+S.subjects.map(s=>s.name).join(' & ');
+  document.getElementById('clist').innerHTML = all.map((ch,i)=>`
+    <div class="ci" id="ci-${i}" onclick="togChap(${i},'${ch.name.replace(/'/g,"\\'")}')">
+      <div class="ci-cb" id="cb-${i}"></div>
+      <div class="ci-n">${ch.name}${ch.top?` <span class="b80">HIGH FREQ</span>`:''}</div>
+      <div class="ci-m">${ch.subj}</div>
+    </div>`).join('');
+  go('s-chap');
+}
+function togChap(i,name) {
+  const item=document.getElementById(`ci-${i}`),cb=document.getElementById(`cb-${i}`);
+  const idx=S.chapters.indexOf(name);
+  if(idx>=0){S.chapters.splice(idx,1);item.classList.remove('on');cb.textContent='';}
+  else{S.chapters.push(name);item.classList.add('on');cb.textContent='✓';}
+}
+function allChaps() {
+  const all=[];S.subjects.forEach(s=>s.chapters.forEach(ch=>all.push(ch)));
+  S.chapters=[...all];
+  document.querySelectorAll('.ci').forEach((item,i)=>{
+    item.classList.add('on');
+    const cb=document.getElementById(`cb-${i}`);if(cb)cb.textContent='✓';
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// AI QUESTION GENERATION  ← THE FIXED + COMPLETE VERSION
+// ════════════════════════════════════════════════════════
+async function genQ(count) {
+  const isHi = S.lang === 'hi';
+  load(t('ltxt'), t('lsub'));
+
+  const subjs = (S.subjects.length ? S.subjects : S.exam.subjects).map(s=>s.name).join(', ');
+  const chaps = S.chapters.length ? S.chapters.join(', ') : 'all chapters';
+  const half  = Math.floor(count/2);
+
+  // Strong Hindi enforcement block
+  const langBlock = isHi
+    ? `══════════════ MANDATORY LANGUAGE RULE ══════════════
+YOU MUST WRITE EVERY "q", EVERY OPTION IN "opts", AND "exp" IN HINDI (Devanagari script) ONLY.
+DO NOT USE ENGLISH INSIDE THESE FIELDS. NOT EVEN ONE WORD.
+
+CORRECT HINDI EXAMPLE:
+{
+  "q": "भारतीय संविधान के किस अनुच्छेद में मूल अधिकारों का वर्णन है?",
+  "opts": ["अनुच्छेद 12–35", "अनुच्छेद 36–51", "अनुच्छेद 52–62", "अनुच्छेद 1–11"],
+  "ans": 0,
+  "exp": "अनुच्छेद 12 से 35 में मूल अधिकारों का विस्तार से वर्णन किया गया है।",
+  "type": "pyq",
+  "source": "${S.exam.name} 2022",
+  "subject": "${(S.subjects[0]||S.exam.subjects[0]).name}"
+}
+
+FOLLOW THIS PATTERN FOR ALL ${count} QUESTIONS. HINDI ONLY IN q, opts, AND exp.
+══════════════════════════════════════════════════`
+    : `LANGUAGE: Write all questions, options, and explanations in clear English.`;
+
+  const prompt =
+`You are an expert Indian government exam question setter for ${S.exam.name} (${S.exam.org}).
+
+${langBlock}
+
+TASK: Generate exactly ${count} MCQ questions.
+Subjects: ${subjs}
+Chapter focus: ${chaps}
+
+RULES:
+1. First ${half} items → type:"pyq", source:"${S.exam.name} YEAR" (use real years 2019-2024)
+2. Next ${count-half} items → type:"ai", source:"${isHi?'AI निर्मित':'AI Generated'}"
+3. Difficulty: 30% easy, 40% moderate, 30% hard
+4. "ans" = 0-based index of correct option
+5. Explanations must be 1-2 sentences
+
+OUTPUT FORMAT — return ONLY this JSON array, starting with [ and ending with ], NO other text:
+[
+  {
+    "q": "...",
+    "opts": ["...","...","...","..."],
+    "ans": 0,
+    "exp": "...",
+    "type": "pyq",
+    "source": "${S.exam.name} 2023",
+    "subject": "..."
+  }
+]`;
+
+  try {
+    const res = await fetch(CFG.API, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({prompt, lang:S.lang}),
+    });
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if(data.error) throw new Error(data.error);
+    if(!Array.isArray(data.questions)||data.questions.length===0) throw new Error('Empty');
+    unload();
+    return data.questions.slice(0,count);
+  } catch(err) {
+    console.error('genQ error:',err.message);
+    unload();
+    return fallbackQ(count);
+  }
+}
+
+function fallbackQ(count) {
+  const isHi=S.lang==='hi';
+  return Array.from({length:count},(_,i)=>({
+    q: isHi
+      ? `${S.exam.name} नमूना प्रश्न ${i+1}: निम्नलिखित में से कौन सा सही है?`
+      : `${S.exam.name} Sample Q${i+1}: Which of the following is correct?`,
+    opts: isHi
+      ? ['विकल्प A','विकल्प B','विकल्प C','विकल्प D']
+      : ['Option A','Option B','Option C','Option D'],
+    ans:  Math.floor(Math.random()*4),
+    exp:  isHi
+      ? 'AI इस समय उपलब्ध नहीं है। पुनः प्रयास करें।'
+      : 'AI unavailable. Please try again.',
+    type: i<count/2?'pyq':'ai',
+    source: i<count/2?`${S.exam.name} ${2024-Math.floor(Math.random()*5)}`:(isHi?'AI निर्मित':'AI Generated'),
+    subject: S.exam.subjects[0]?.name||'General',
+  }));
+}
+
+// ════════════════════════════════════════════════════════
+// QUIZ LAUNCH
+// ════════════════════════════════════════════════════════
+async function startMock() {
+  S.subjects=S.exam.subjects; S.chapters=[]; S.mode=S.lang==='hi'?'पूर्ण मॉक टेस्ट':'FULL MOCK TEST';
+  await launch(50); ga('start_mock','Quiz',S.exam.name);
+}
+async function startSub() {
+  S.mode=S.lang==='hi'?'विषयवार अभ्यास':'SUBJECT PRACTICE';
+  await launch(50); ga('start_subject','Quiz',S.exam.name);
+}
+async function retry() {
+  S.mode.includes('MOCK')||S.mode.includes('मॉक') ? await startMock() : await startSub();
+}
+
+async function launch(n) {
+  S.answers={}; S.skipped=new Set(); S.qIdx=0;
+  S.questions = await genQ(n);
+  document.getElementById('qml').textContent = S.mode;
+  document.getElementById('qel').textContent = `${S.exam.name} — ${new Date().getFullYear()}`;
+  document.getElementById('qtot').textContent = S.questions.length;
+  S.timeLeft = Math.min(n*72, 3600);
+  startTmr(); renderQ(); go('s-quiz');
+}
+
+// ════════════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════════════
+function startTmr() {
+  if(S.timer) clearInterval(S.timer);
+  const el=document.getElementById('tmr');
+  S.timer=setInterval(()=>{
+    S.timeLeft--;
+    const m=String(Math.floor(S.timeLeft/60)).padStart(2,'0');
+    const s=String(S.timeLeft%60).padStart(2,'0');
+    el.textContent=`${m}:${s}`;
+    if(S.timeLeft<=300) el.classList.add('warn');
+    if(S.timeLeft<=0){clearInterval(S.timer);showRes();}
+  },1000);
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ════════════════════════════════════════════════════════
+function renderQ() {
+  const q=S.questions[S.qIdx]; if(!q) return;
+  const tot=S.questions.length, isHi=S.lang==='hi';
+  document.getElementById('qpf').style.width=((S.qIdx+1)/tot*100)+'%';
+  document.getElementById('qcur').textContent=S.qIdx+1;
+  document.getElementById('qnum').textContent=isHi?`प्रश्न ${S.qIdx+1} / ${tot}`:`Question ${S.qIdx+1} of ${tot}`;
+  const bd=document.getElementById('qbdg');
+  if(q.type==='pyq'){bd.className='qbadge pyq';bd.textContent=`📜 PYQ — ${q.source||''}`;}
+  else{bd.className='qbadge ai';bd.textContent=`🤖 ${t('aiSrc')} — ${q.subject||''}`;}
+  document.getElementById('qtxt').textContent=q.q;
+  const ans=S.answers[S.qIdx], lbls=['A','B','C','D'];
+  document.getElementById('opts').innerHTML=q.opts.map((o,i)=>{
+    let cls='';
+    if(ans!==undefined){if(i===q.ans)cls='ok';else if(i===ans&&i!==q.ans)cls='no';}
+    return `<button class="opt ${cls}" onclick="pickOpt(${i})" ${ans!==undefined?'disabled':''}><span class="olbl">${lbls[i]}</span><span>${o}</span></button>`;
+  }).join('');
+  const eb=document.getElementById('expbox');
+  if(ans!==undefined&&q.exp){eb.style.display='block';eb.innerHTML=`<b>${isHi?'स्पष्टीकरण':'Explanation'}:</b> ${q.exp}`;}
+  else eb.style.display='none';
+  document.getElementById('prevbtn').disabled=S.qIdx===0;
+  document.getElementById('nextbtn').textContent=S.qIdx===tot-1?t('finish'):t('nextbtn');
+}
+
+function pickOpt(i){
+  if(S.answers[S.qIdx]!==undefined) return;
+  S.answers[S.qIdx]=i; S.skipped.delete(S.qIdx); renderQ();
+  ga('answer','Quiz',S.exam.name);
+}
+function nextQ(){S.qIdx>=S.questions.length-1?showRes():(S.qIdx++,renderQ());}
+function prevQ(){S.qIdx>0&&(S.qIdx--,renderQ());}
+function skipQ(){S.skipped.add(S.qIdx);S.qIdx<S.questions.length-1?(S.qIdx++,renderQ()):showRes();}
+function quit(){if(confirm(t('quitMsg'))){if(S.timer)clearInterval(S.timer);go('s-info');}}
+
+// ════════════════════════════════════════════════════════
+// RESULTS
+// ════════════════════════════════════════════════════════
+function showRes() {
+  if(S.timer) clearInterval(S.timer);
+  let c=0,w=0;
+  S.questions.forEach((q,i)=>{
+    const a=S.answers[i];
+    if(a===undefined||S.skipped.has(i)) return;
+    a===q.ans?c++:w++;
+  });
+  const sk=S.questions.length-c-w, pct=Math.round(c/S.questions.length*100);
+  document.getElementById('rpct').textContent=pct+'%';
+  document.getElementById('rc').textContent=c;
+  document.getElementById('rw').textContent=w;
+  document.getElementById('rs').textContent=sk;
+  const titles=t('titles');
+  document.getElementById('rtitle').textContent=pct>=80?titles[0]:pct>=65?titles[1]:pct>=50?titles[2]:pct>=35?titles[3]:titles[4];
+  const isHi=S.lang==='hi';
+  document.getElementById('rsub').textContent=isHi
+    ?`${t('rsub1')} ${S.questions.length} ${t('rsub2')} ${c} ${t('rsub3')}`
+    :`${t('rsub1')} ${c} ${t('rsub2')} ${S.questions.length} ${t('rsub3')}`;
+  applyT();
+  renderVocab('vwords-res');
+  go('s-res');
+  ga('quiz_complete','Quiz',`${S.exam.name}:${pct}%`);
+}
+
+// ════════════════════════════════════════════════════════
+// NAV + LOADING
+// ════════════════════════════════════════════════════════
+function go(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goHome(){if(S.timer)clearInterval(S.timer);renderHome();go('s-home');}
+function load(txt,sub){document.getElementById('ltxt').textContent=txt||'Loading...';document.getElementById('lsub').textContent=sub||'';document.getElementById('loader').classList.add('on');}
+function unload(){document.getElementById('loader').classList.remove('on');}
+
+// Wire mock-btn onclick (subj-btn and snext have inline handlers)
+const _mb = document.getElementById('mock-btn');
+if (_mb) _mb.onclick = startMock;
+</script>
+</body>
+</html>
