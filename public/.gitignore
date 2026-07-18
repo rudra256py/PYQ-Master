@@ -1,0 +1,16 @@
+# ── SECRETS — NEVER COMMIT ──
+.env
+.env.local
+.env.production
+.env.development
+
+# Vercel cache
+.vercel
+
+# Node
+node_modules/
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
