@@ -62,9 +62,9 @@ export default async function handler(req, res) {
     });
   }
 
-  // -- Gemini model: gemini-1.5-flash (free tier mein available)
+  // -- Gemini model: gemini-2.0-flash (free tier mein available)
   const GEMINI_URL =
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
   try {
     const geminiRes = await fetch(GEMINI_URL, {
@@ -174,7 +174,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       questions: valid,
       lang,
-      model: "gemini-1.5-flash",
+      model: "gemini-2.0-flash",
       count: valid.length,
     });
 
