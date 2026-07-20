@@ -18,8 +18,8 @@ export default async function handler(req, res) {
 
   // Try these models one by one until one works
   const MODELS = [
-    "gemini-1.5-flash-latest",
-    "gemini-1.5-flash",
+    "gemini-2.5-flash-latest",
+    "gemini-2.5-flash",
     "gemini-pro",
   ];
 
