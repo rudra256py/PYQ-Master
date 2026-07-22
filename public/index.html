@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="hi-IN">
 <head>
@@ -32,6 +34,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<!-- Supabase — used for Sign In/Sign Up + question caching (guest mode works without it) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
 <style>
 /* ══════════════════════════════════════════════
@@ -114,6 +119,44 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .lc.en .lc-badge{background:rgba(30,144,255,.1);color:var(--blue);border:1px solid rgba(30,144,255,.25)}
 .lc.hi .lc-badge{background:rgba(245,166,35,.1);color:var(--gold);border:1px solid rgba(245,166,35,.25)}
 .ls-foot{margin-top:2rem;font-size:.68rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* ══════════════════════════════════════════════
+   AUTH SCREEN — Sign In / Sign Up / Guest
+══════════════════════════════════════════════ */
+#auth-screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.2rem;text-align:center;position:relative;z-index:1;animation:up .45s ease}
+.au-logo{font-family:'Rajdhani',sans-serif;font-size:2.4rem;font-weight:700;letter-spacing:3px;background:linear-gradient(135deg,var(--gold),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.2rem}
+.au-logo span{-webkit-text-fill-color:var(--text)}
+.au-sub{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:3px;color:var(--teal);text-transform:uppercase;margin-bottom:1.8rem}
+.au-card{background:var(--surf);border:1.5px solid var(--border);border-radius:20px;padding:1.8rem 1.5rem;max-width:380px;width:100%}
+.au-tabs{display:flex;gap:.4rem;background:var(--surf2);border-radius:12px;padding:4px;margin-bottom:1.3rem}
+.au-tab{flex:1;padding:.6rem;border-radius:9px;font-size:.82rem;font-weight:700;color:var(--muted);transition:all .2s}
+.au-tab.on{background:var(--gold);color:#0a0c14}
+.au-field{margin-bottom:.8rem;text-align:left}
+.au-field label{display:block;font-size:.68rem;color:var(--muted);margin-bottom:.35rem;font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
+.au-field input{width:100%;background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;padding:.72rem .9rem;color:var(--text);font-size:.87rem;transition:border-color .2s}
+.au-field input:focus{border-color:var(--gold)}
+.au-submit{width:100%;background:linear-gradient(135deg,var(--gold),#e8920a);color:#0a0c14;font-weight:800;font-size:.88rem;padding:.8rem;border-radius:10px;margin-top:.4rem;transition:all .2s}
+.au-submit:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(245,166,35,.25)}
+.au-submit:disabled{opacity:.5;cursor:not-allowed}
+.au-msg{font-size:.76rem;margin-top:.7rem;min-height:1.1rem}
+.au-msg.err{color:var(--red)}
+.au-msg.ok{color:var(--green)}
+.au-divider{display:flex;align-items:center;gap:.7rem;margin:1.2rem 0;color:var(--muted);font-size:.68rem}
+.au-divider::before,.au-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.au-guest{width:100%;background:transparent;border:1.5px solid var(--border);color:var(--text);font-weight:700;font-size:.85rem;padding:.75rem;border-radius:10px;transition:all .2s}
+.au-guest:hover{border-color:var(--teal);color:var(--teal)}
+.au-foot{margin-top:1.3rem;font-size:.66rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.au-userchip{display:none;align-items:center;gap:.4rem;font-size:.65rem;color:var(--muted);padding:4px 10px;border-radius:8px;border:1px solid var(--border)}
+.au-userchip.on{display:flex}
+
+/* ══════════════════════════════════════════════
+   CATEGORY BOXES — grouped exam sections
+══════════════════════════════════════════════ */
+.catbox{margin-bottom:1.8rem;animation:up .4s ease both}
+.catbox-hdr{display:flex;align-items:center;gap:.6rem;margin-bottom:.8rem;padding-bottom:.6rem;border-bottom:1px solid var(--border)}
+.catbox-ico{font-size:1.3rem}
+.catbox-title{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:.5px}
+.catbox-count{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--muted);background:var(--surf2);padding:2px 9px;border-radius:20px}
 
 /* ══════════════════════════════════════════════
    HEADER
@@ -298,6 +341,11 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .rsl{font-size:.63rem;color:var(--muted);margin-top:2px}
 .ract{display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap}
 
+/* Confetti burst — shown briefly on a great score */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:500;overflow:hidden}
+.confetti-piece{position:absolute;top:-10px;width:8px;height:14px;opacity:.9;animation:confettiFall 2.6s linear forwards;border-radius:2px}
+@keyframes confettiFall{to{transform:translateY(105vh) rotate(540deg);opacity:0}}
+
 /* ══════════════════════════════════════════════
    VOCAB BAR  (2 words)
 ══════════════════════════════════════════════ */
@@ -363,6 +411,37 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 </div>
 
 <!-- ══════════════════════════════
+     AUTH — Sign In / Sign Up / Guest
+══════════════════════════════ -->
+<div id="auth-screen">
+  <div class="au-logo">PYQ<span>Master</span></div>
+  <div class="au-sub">🇮🇳 India's AI-Powered Exam Prep Engine</div>
+  <div class="au-card">
+    <div class="au-tabs">
+      <button class="au-tab on" id="tab-signin" onclick="setAuthTab('signin')">Sign In</button>
+      <button class="au-tab" id="tab-signup" onclick="setAuthTab('signup')">Sign Up</button>
+    </div>
+
+    <div class="au-field">
+      <label>Email</label>
+      <input type="email" id="au-email" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="au-field">
+      <label>Password</label>
+      <input type="password" id="au-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button class="au-submit" id="au-submit-btn" onclick="submitAuth()">Sign In</button>
+    <div class="au-msg" id="au-msg"></div>
+
+    <div class="au-divider">OR</div>
+
+    <button class="au-guest" onclick="continueAsGuest()">👤 Continue as Guest</button>
+  </div>
+  <div class="au-foot">Guest mode: no account, no data saved • Sign up to save progress across devices</div>
+</div>
+
+<!-- ══════════════════════════════
      LANGUAGE SELECT
 ══════════════════════════════ -->
 <div id="lang-screen">
@@ -395,9 +474,12 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 <header id="hdr">
   <a class="logo" href="#" onclick="goHome();return false">PYQ<span>Master</span></a>
   <div class="hdr-r">
+    <span class="au-userchip" id="userChip">👤 Guest</span>
     <button class="lang-btn" id="lbtn" onclick="switchLang()">🌐 EN</button>
   </div>
 </header>
+
+<div id="confetti"></div>
 
 <!-- ══════════════════════════════
      APP
@@ -423,7 +505,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
     </div>
     <div class="sec-lbl" id="catlbl">Browse by Category</div>
     <div class="cats" id="catrow"></div>
-    <div class="egrid" id="egrid"></div>
+    <div id="examSections"></div>
     <div class="vbar" id="vbar-home">
       <div class="vbar-title">📚 Vocab Corner — Important for NDA / CDS / CUET / UPSC</div>
       <div class="vwords" id="vwords-home"></div>
@@ -557,7 +639,21 @@ const CFG = {
   // After deploying on Vercel this stays as "/api/generate"
   // It automatically points to your backend
   API: "/api/generate",
+
+  // ── Supabase (for Sign In/Up + question caching) ──
+  // Get these from supabase.com → your project → Settings → API
+  // Both values below are PUBLIC and safe to expose (protected by RLS)
+  SUPABASE_URL:      "https://YOUR-PROJECT.supabase.co",
+  SUPABASE_ANON_KEY:  "YOUR-ANON-PUBLIC-KEY",
 };
+
+// Supabase client — null if not configured yet (site still works as Guest-only)
+let sb = null;
+try {
+  if (window.supabase && !CFG.SUPABASE_URL.includes("YOUR-PROJECT")) {
+    sb = window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+  }
+} catch(e) { console.warn("Supabase not configured yet:", e.message); }
 
 // ════════════════════════════════════════════════════════
 // VOCAB  — 2 words shown at a time from this pool
@@ -703,6 +799,19 @@ const EXAMS = [
    ],
    cutoffs:[{y:'2024',g:'152'},{y:'2023',g:'146'},{y:'2022',g:'153'},{y:'2021',g:'148'},{y:'2020',g:'140'}],
    diff:[{l:'Easy',p:35,c:'#2ed573'},{l:'Moderate',p:40,c:'#f5a623'},{l:'Hard',p:25,c:'#ff4757'}]},
+
+  {id:'agniveer', name:'Agniveer', org:'Indian Army / Navy / Air Force', cat:'defence', icon:'🔥', color:'#ff4757', emoji:'🔥',
+   desc:'Agnipath Scheme — Common Entrance Exam for Agniveer Recruitment',
+   totalQ:50, time:'1 hr', marks:100,
+   meta:[{l:'Questions',v:'50'},{l:'Marks',v:'100'},{l:'Duration',v:'1 Hr'},{l:'Neg. Marks',v:'-0.25'}],
+   subjects:[
+     {name:'General Science',icon:'🔬',ch:6,weight:30,color:'#2ed573',top:true,chapters:['Physics Basics','Chemistry Basics','Biology Basics','Human Body','Everyday Science','Scientific Inventions']},
+     {name:'General Knowledge',icon:'🌐',ch:6,weight:30,color:'#f5a623',top:true,chapters:['Current Affairs','Indian Army History','Geography','History','Polity','Defence Awareness']},
+     {name:'Mathematics',icon:'📐',ch:5,weight:25,color:'#1e90ff',top:true,chapters:['Number System','Simplification','Ratio & Proportion','Percentage','Profit & Loss']},
+     {name:'Reasoning',icon:'🧠',ch:4,weight:15,color:'#9b59b6',top:false,chapters:['Series','Analogy','Classification','Coding-Decoding']},
+   ],
+   cutoffs:[{y:'2024',g:'35'},{y:'2023',g:'32'},{y:'2022',g:'30'},{y:'2021',g:'—'},{y:'2020',g:'—'}],
+   diff:[{l:'Easy',p:45,c:'#2ed573'},{l:'Moderate',p:40,c:'#f5a623'},{l:'Hard',p:15,c:'#ff4757'}]},
 
   {id:'upsc', name:'UPSC CSE', org:'UPSC', cat:'civil', icon:'🏛️', color:'#9b59b6', emoji:'🏛️',
    desc:'Civil Services Examination — IAS / IPS / IFS',
@@ -895,11 +1004,12 @@ let S = {
   lang:'en', exam:null, subjects:[], chapters:[],
   questions:[], qIdx:0, answers:{}, skipped:new Set(),
   mode:'', timer:null, timeLeft:0,
+  user:null, authTab:'signin',
 };
 const t = k => T[S.lang][k] || T.en[k] || k;
 
 // ════════════════════════════════════════════════════════
-// SPLASH → auto-hide after fonts load
+// SPLASH → auto-hide after fonts load → goes to AUTH screen
 // ════════════════════════════════════════════════════════
 window.addEventListener('load', () => {
   setTimeout(() => {
@@ -907,10 +1017,84 @@ window.addEventListener('load', () => {
     sp.classList.add('out');
     setTimeout(() => {
       sp.style.display = 'none';
-      document.getElementById('lang-screen').style.display = 'flex';
+      document.getElementById('auth-screen').style.display = 'flex';
     }, 460);
   }, 900);
 });
+
+// ════════════════════════════════════════════════════════
+// AUTH — Sign In / Sign Up / Guest
+// (Works fully as Guest even if Supabase isn't configured yet)
+// ════════════════════════════════════════════════════════
+function setAuthTab(tab) {
+  S.authTab = tab;
+  document.getElementById('tab-signin').classList.toggle('on', tab==='signin');
+  document.getElementById('tab-signup').classList.toggle('on', tab==='signup');
+  document.getElementById('au-submit-btn').textContent = tab==='signin' ? 'Sign In' : 'Create Account';
+  document.getElementById('au-msg').textContent = '';
+}
+
+function showAuthMsg(text, isErr) {
+  const m = document.getElementById('au-msg');
+  m.textContent = text;
+  m.className = 'au-msg ' + (isErr ? 'err' : 'ok');
+}
+
+async function submitAuth() {
+  const email = document.getElementById('au-email').value.trim();
+  const pass  = document.getElementById('au-pass').value;
+  const btn   = document.getElementById('au-submit-btn');
+
+  if (!email || !pass) return showAuthMsg('Please fill in both fields', true);
+  if (pass.length < 6) return showAuthMsg('Password must be at least 6 characters', true);
+
+  if (!sb) {
+    showAuthMsg('Account system not set up yet — continuing as Guest instead.', true);
+    setTimeout(continueAsGuest, 1200);
+    return;
+  }
+
+  btn.disabled = true;
+  showAuthMsg('Please wait...', false);
+
+  try {
+    if (S.authTab === 'signup') {
+      const { data, error } = await sb.auth.signUp({ email, password: pass });
+      if (error) throw error;
+      showAuthMsg('Account created! Signing you in...', false);
+      S.user = data.user;
+    } else {
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+      if (error) throw error;
+      S.user = data.user;
+    }
+    ga('auth_' + S.authTab, 'Auth', 'success');
+    enterApp();
+  } catch (err) {
+    showAuthMsg(err.message || 'Something went wrong. Try again.', true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function continueAsGuest() {
+  S.user = null;
+  ga('auth_guest', 'Auth', 'guest');
+  enterApp();
+}
+
+function enterApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  const chip = document.getElementById('userChip');
+  if (S.user) {
+    chip.textContent = '👤 ' + (S.user.email || 'Signed in');
+    chip.classList.add('on');
+  } else {
+    chip.textContent = '👤 Guest';
+    chip.classList.add('on');
+  }
+  document.getElementById('lang-screen').style.display = 'flex';
+}
 
 // ════════════════════════════════════════════════════════
 // LANGUAGE
@@ -997,39 +1181,72 @@ function renderVocab(containerId) {
 // ════════════════════════════════════════════════════════
 function renderHome() {
   applyT();
-  // Category bar
+  // Category bar — clicking scrolls to that box (or shows all)
   document.getElementById('catrow').innerHTML = CATS.map(c=>
     `<button class="cat${c.id==='all'?' on':''}" onclick="filterCat('${c.id}',this)">${c.icon} ${c.label}</button>`
   ).join('');
-  renderExams('all');
+  renderExamSections();
   renderVocab('vwords-home');
 }
 
-function renderExams(cat) {
-  const list = cat==='all' ? EXAMS : EXAMS.filter(e=>e.cat===cat);
-  document.getElementById('egrid').innerHTML = list.map(e=>`
-    <div class="ecard" style="--ec:${e.color}" data-cat="${e.cat}" data-name="${e.name.toLowerCase()}" onclick="showExam('${e.id}')">
-      <div class="ei">${e.icon}</div>
-      <div class="en">${e.name}</div>
-      <div class="eo">${e.org}</div>
-      <div class="etags">
-        <span class="tag">${e.cat.toUpperCase()}</span>
-        <span class="tag">${e.totalQ}Q</span>
-        <span class="tag">${e.time}</span>
+// Groups exams into one visual "box" per category — NDA/CDS/Agniveer/AFCAT
+// all sit together under one Defence box, etc.
+function renderExamSections() {
+  const container = document.getElementById('examSections');
+  const cats = CATS.filter(c => c.id !== 'all');
+  container.innerHTML = cats.map(cat => {
+    const list = EXAMS.filter(e => e.cat === cat.id);
+    if (!list.length) return '';
+    return `
+    <div class="catbox" id="catbox-${cat.id}">
+      <div class="catbox-hdr">
+        <span class="catbox-ico">${cat.icon}</span>
+        <span class="catbox-title">${cat.label}</span>
+        <span class="catbox-count">${list.length} ${S.lang==='hi'?'परीक्षाएं':'exams'}</span>
       </div>
-    </div>`).join('');
+      <div class="egrid">
+        ${list.map(e => `
+          <div class="ecard" style="--ec:${e.color}" data-cat="${e.cat}" data-name="${e.name.toLowerCase()}" onclick="showExam('${e.id}')">
+            <div class="ei">${e.icon}</div>
+            <div class="en">${e.name}</div>
+            <div class="eo">${e.org}</div>
+            <div class="etags">
+              <span class="tag">${e.cat.toUpperCase()}</span>
+              <span class="tag">${e.totalQ}Q</span>
+              <span class="tag">${e.time}</span>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
 }
 
-function filterCat(cat,btn) {
+function filterCat(cat, btn) {
   document.querySelectorAll('.cat').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  renderExams(cat);
+  if (cat === 'all') {
+    document.querySelectorAll('.catbox').forEach(b => b.style.display = '');
+    window.scrollTo({top:0, behavior:'smooth'});
+    return;
+  }
+  document.querySelectorAll('.catbox').forEach(b => {
+    b.style.display = (b.id === 'catbox-'+cat) ? '' : 'none';
+  });
+  const target = document.getElementById('catbox-'+cat);
+  if (target) target.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 function searchEx(v) {
-  const q=v.toLowerCase();
-  document.querySelectorAll('.ecard').forEach(c=>{
-    c.style.display=c.dataset.name.includes(q)?'':'none';
+  const q = v.toLowerCase();
+  if (!q) { document.querySelectorAll('.catbox').forEach(b=>b.style.display=''); }
+  document.querySelectorAll('.catbox').forEach(box => {
+    let anyVisible = false;
+    box.querySelectorAll('.ecard').forEach(c => {
+      const match = c.dataset.name.includes(q);
+      c.style.display = match ? '' : 'none';
+      if (match) anyVisible = true;
+    });
+    if (q) box.style.display = anyVisible ? '' : 'none';
   });
 }
 
@@ -1201,7 +1418,14 @@ OUTPUT FORMAT — return ONLY this JSON array, starting with [ and ending with ]
     const res = await fetch(CFG.API, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({prompt, lang:S.lang}),
+      body: JSON.stringify({
+        prompt,
+        lang: S.lang,
+        examId: S.exam.id,
+        subjects: (S.subjects.length ? S.subjects : S.exam.subjects).map(s=>s.name),
+        chapters: S.chapters,
+        count,
+      }),
     });
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
@@ -1337,7 +1561,24 @@ function showRes() {
   applyT();
   renderVocab('vwords-res');
   go('s-res');
+  if (pct >= 80) fireConfetti();
   ga('quiz_complete','Quiz',`${S.exam.name}:${pct}%`);
+}
+
+// Light celebratory confetti for a great score — pure CSS/JS, no library
+function fireConfetti() {
+  const box = document.getElementById('confetti');
+  const colors = ['#f5a623','#e84393','#00d4aa','#2ed573','#1e90ff'];
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = Math.random()*100 + 'vw';
+    p.style.background = colors[Math.floor(Math.random()*colors.length)];
+    p.style.animationDelay = (Math.random()*0.4) + 's';
+    p.style.animationDuration = (2 + Math.random()*1.2) + 's';
+    box.appendChild(p);
+    setTimeout(() => p.remove(), 3600);
+  }
 }
 
 // ════════════════════════════════════════════════════════
