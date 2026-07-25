@@ -55,39 +55,95 @@ export default async function handler(req, res) {
   const chapterKey = (Array.isArray(chapters) && chapters.length) ? [...chapters].sort().join('|') : 'all';
   const wantHalf   = Math.floor(wantCount / 2);
 
+  // 1. Safely extract variables (handles undefined body, and parses strings to correct types)
+  const pyqOnly = req.body?.pyqOnly === true || req.body?.pyqOnly === 'true';
+  const wantCount = parseInt(req.body?.count, 10) || 50;
+
+  // 2. Define a safe, local shuffle function
+  const shuffleArray = (array) => {
+    if (!Array.isArray(array)) return [];
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  };
+
   let pyqPool = [];
   let cachePool = [];
 
-  // ── STEP 1 + 2: Pull whatever we already have from the database ──
-  if (supabase && examId) {
+  // Ensure core dependencies exist before querying
+  if (typeof supabase !== 'undefined' && typeof examId !== 'undefined') {
     try {
-      const { data: pyqRows } = await supabase
+      let query = supabase
         .from('pyq_uploads')
         .select('*')
         .eq('exam_id', examId)
-        .eq('lang', lang || 'en')
-        .limit(300);
-      if (pyqRows) {
+        .eq('lang', lang || 'en');
+
+      if (pyqOnly) {
+        // Last 10 years only for the dedicated "10-Year PYQ" button
+        const tenYearsAgo = new Date().getFullYear() - 10;
+        query = query.gte('year', tenYearsAgo);
+      }
+
+      // VITAL FIX: Supabase returns { data, error }, it does not always throw exceptions.
+      const { data: pyqRows, error: pyqError } = await query.limit(500);
+      
+      if (pyqError) {
+        console.warn("pyq_uploads query error:", pyqError.message);
+      } else if (pyqRows && pyqRows.length > 0) {
         pyqPool = pyqRows.map(r => ({
-          q: r.q, opts: r.opts, ans: r.ans, exp: r.exp || '',
+          q: r.q,
+          opts: [r.opt_a, r.opt_b, r.opt_c, r.opt_d],
+          ans: r.ans,
+          exp: r.exp || '',
           type: 'pyq',
-          source: r.year ? `${examId.toUpperCase()} ${r.year}` : `${examId.toUpperCase()}`,
+          source: `${examId.toUpperCase()} ${r.year || ''}`.trim(),
           subject: r.subject || '',
         }));
       }
-    } catch (e) { console.warn("pyq_uploads read failed:", e.message); }
+    } catch (e) { 
+      console.warn("pyq_uploads read exception:", e.message); 
+    }
 
-    try {
-      const { data: cacheRows } = await supabase
-        .from('questions_cache')
-        .select('*')
-        .eq('exam_id', examId)
-        .eq('lang', lang || 'en')
-        .eq('subject_key', subjectKey)
-        .eq('chapter_key', chapterKey)
-        .limit(400);
-      if (cacheRows) cachePool = cacheRows.map(r => r.question);
-    } catch (e) { console.warn("questions_cache read failed:", e.message); }
+    if (!pyqOnly) {
+      try {
+        const { data: cacheRows, error: cacheError } = await supabase
+          .from('questions_cache')
+          .select('*')
+          .eq('exam_id', examId)
+          .eq('lang', lang || 'en')
+          .eq('subject_key', typeof subjectKey !== 'undefined' ? subjectKey : '')
+          .eq('chapter_key', typeof chapterKey !== 'undefined' ? chapterKey : '')
+          .limit(400);
+          
+        if (cacheError) {
+          console.warn("questions_cache query error:", cacheError.message);
+        } else if (cacheRows) {
+          cachePool = cacheRows.map(r => r.question);
+        }
+      } catch (e) { 
+        console.warn("questions_cache read exception:", e.message); 
+      }
+    }
+  }
+
+  // 3. Safely shuffle the arrays
+  pyqPool = shuffleArray(pyqPool);
+
+  // ── PYQ-ONLY MODE: never call AI, just return what's in the DB ──
+  if (pyqOnly) {
+    return res.status(200).json({
+      questions: pyqPool.slice(0, wantCount),
+      source: 'pyq-database',
+      lang: typeof lang !== 'undefined' ? lang : 'en',
+      totalAvailable: pyqPool.length,
+    });
+  }
+
+  cachePool = shuffleArray(cachePool); catch (e) { console.warn("questions_cache read failed:", e.message); }
   }
 
   pyqPool   = shuffle(pyqPool);
