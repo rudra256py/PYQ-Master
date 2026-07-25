@@ -182,9 +182,65 @@ export default async function handler(req, res) {
         question: q,
         q_type: q.type || 'ai',
       }));
-      await supabase.from('questions_cache').insert(rows);
-    } catch (e) { console.warn("questions_cache insert failed:", e.message); }
+     let pyqPool = [];
+  let cachePool = [];
+
+  if (supabase && examId) {
+    try {
+      let query = supabase
+        .from('pyq_uploads')
+        .select('*')
+        .eq('exam_id', examId)
+        .eq('lang', lang || 'en');
+
+      if (pyqOnly) {
+        // Last 10 years only, for the dedicated "10-Year PYQ" button
+        const tenYearsAgo = new Date().getFullYear() - 10;
+        query = query.gte('year', tenYearsAgo);
+      }
+
+      const { data: pyqRows } = await query.limit(500);
+      if (pyqRows) {
+        pyqPool = pyqRows.map(r => ({
+          q: r.q,
+          opts: [r.opt_a, r.opt_b, r.opt_c, r.opt_d],
+          ans: r.ans,
+          exp: r.exp || '',
+          type: 'pyq',
+          source: `${examId.toUpperCase()} ${r.year}`,
+          subject: r.subject || '',
+        }));
+      }
+    } catch (e) { console.warn("pyq_uploads read failed:", e.message); }
+
+    if (!pyqOnly) {
+      try {
+        const { data: cacheRows } = await supabase
+          .from('questions_cache')
+          .select('*')
+          .eq('exam_id', examId)
+          .eq('lang', lang || 'en')
+          .eq('subject_key', subjectKey)
+          .eq('chapter_key', chapterKey)
+          .limit(400);
+        if (cacheRows) cachePool = cacheRows.map(r => r.question);
+      } catch (e) { console.warn("questions_cache read failed:", e.message); }
+    }
   }
+
+  pyqPool = shuffle(pyqPool);
+
+  // ── PYQ-ONLY MODE: never call Gemini, just return what's in the DB ──
+  if (pyqOnly) {
+    return res.status(200).json({
+      questions: pyqPool.slice(0, wantCount),
+      source: 'pyq-database',
+      lang,
+      totalAvailable: pyqPool.length,
+    });
+  }
+
+  cachePool = shuffle(cachePool);
 
   finalQs = shuffle([...finalQs, ...generated]).slice(0, wantCount);
 
