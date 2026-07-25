@@ -532,29 +532,25 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <table class="ctbl" id="ctbl"></table>
     </div>
     <div class="abox">
-      <h3 id="pt">How do you want to practice?</h3>
-      <p  id="pd">Both modes include 50% PYQs + 50% AI questions</p>
-      <div class="agrid">
-        <button class="abtn pri" id="mock-btn" onclick="startMock()">
-          <span class="ab-ico">⚡</span>
-          <div class="ab-t" id="mbt">Full Mock Test</div>
-          <div class="ab-d" id="mbd">50 mixed Qs, timed, all subjects</div>
-             <div class="agrid" style="grid-template-columns:1fr 1fr 1fr">
-  <button class="abtn pri" id="mock-btn" onclick="startMock()">
-    <span class="ab-ico">⚡</span>
-    <div class="ab-t" id="mbt">Full Mock Test</div>
-    <div class="ab-d" id="mbd">50 mixed Qs, timed, all subjects</div>
-  </button>
-  <button class="abtn sec" id="subj-btn" onclick="goSubj();go('s-subj')">
-    <span class="ab-ico">📚</span>
-    <div class="ab-t" id="sbt">Subject-wise Practice</div>
-    <div class="ab-d" id="sbd">Pick subjects or chapters to focus</div>
-  </button>
-  <button class="abtn sec" id="pyq10-btn" onclick="startPYQOnly()" style="border-color:var(--teal)">
-    <span class="ab-ico">📜</span>
-    <div class="ab-t">10-Year PYQ</div>
-    <div class="ab-d">Only real questions from last 10 years — no AI</div>
-  </button>
+  <h3 id="pt">How do you want to practice?</h3>
+  <p  id="pd">Both modes include 50% PYQs + 50% AI questions</p>
+  <div class="agrid" style="grid-template-columns:1fr 1fr 1fr">
+    <button class="abtn pri" id="mock-btn" onclick="startMock()">
+      <span class="ab-ico">⚡</span>
+      <div class="ab-t" id="mbt">Full Mock Test</div>
+      <div class="ab-d" id="mbd">50 mixed Qs, timed, all subjects</div>
+    </button>
+    <button class="abtn sec" id="subj-btn" onclick="goSubj();go('s-subj')">
+      <span class="ab-ico">📚</span>
+      <div class="ab-t" id="sbt">Subject-wise Practice</div>
+      <div class="ab-d" id="sbd">Pick subjects or chapters to focus</div>
+    </button>
+    <button class="abtn sec" id="pyq10-btn" onclick="startPYQOnly()" style="border-color:var(--teal)">
+      <span class="ab-ico">📜</span>
+      <div class="ab-t">10-Year PYQ</div>
+      <div class="ab-d">Only real questions — no AI</div>
+    </button>
+  </div>
 </div>
         </button>
         <button class="abtn sec" id="subj-btn" onclick="goSubj();go('s-subj')">
