@@ -1490,6 +1490,53 @@ async function startSub() {
   S.mode=S.lang==='hi'?'विषयवार अभ्यास':'SUBJECT PRACTICE';
   await launch(50); ga('start_subject','Quiz',S.exam.name);
 }
+     async function startPYQOnly() {
+  S.subjects = S.exam.subjects; S.chapters = [];
+  S.mode = S.lang==='hi' ? '10 वर्ष PYQ' : '10-YEAR PYQ';
+  S.answers={}; S.skipped=new Set(); S.qIdx=0;
+
+  load(S.lang==='hi' ? 'PYQ लोड हो रहे हैं...' : 'Loading PYQs...',
+       S.lang==='hi' ? 'डेटाबेस से खोजा जा रहा है' : 'Searching database');
+
+  try {
+    const res = await fetch(CFG.API, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        prompt: 'pyq-only-request',   // backend ignores this in pyqOnly mode
+        lang: S.lang,
+        examId: S.exam.id,
+        pyqOnly: true,
+        count: 50,
+      }),
+    });
+    const data = await res.json();
+    unload();
+
+    if (!data.questions || data.questions.length === 0) {
+      alert(S.lang==='hi'
+        ? 'अभी इस परीक्षा के लिए कोई PYQ अपलोड नहीं हुआ है। बाद में फिर कोशिश करें।'
+        : 'No PYQs uploaded yet for this exam. Please check back later.');
+      return;
+    }
+    if (data.questions.length < 50) {
+      alert(S.lang==='hi'
+        ? `अभी सिर्फ ${data.questions.length} प्रश्न उपलब्ध हैं, इसलिए उतने ही मिलेंगे।`
+        : `Only ${data.questions.length} PYQs available right now — you'll get all of them.`);
+    }
+
+    S.questions = data.questions;
+    document.getElementById('qml').textContent = S.mode;
+    document.getElementById('qel').textContent = `${S.exam.name} — Last 10 Years`;
+    document.getElementById('qtot').textContent = S.questions.length;
+    S.timeLeft = Math.min(S.questions.length*72, 3600);
+    startTmr(); renderQ(); go('s-quiz');
+    ga('start_pyq10','Quiz',S.exam.name);
+  } catch(err) {
+    unload();
+    alert('Something went wrong: ' + err.message);
+  }
+}
 async function retry() {
   S.mode.includes('MOCK')||S.mode.includes('मॉक') ? await startMock() : await startSub();
 }
