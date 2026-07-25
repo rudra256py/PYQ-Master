@@ -1589,6 +1589,9 @@ function go(id){
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
   window.scrollTo({top:0,behavior:'smooth'});
+      if (addToHistory) {
+    history.pushState({screen: id}, '', '#'+id);
+  }
 }
 function goHome(){if(S.timer)clearInterval(S.timer);renderHome();go('s-home');}
 function load(txt,sub){document.getElementById('ltxt').textContent=txt||'Loading...';document.getElementById('lsub').textContent=sub||'';document.getElementById('loader').classList.add('on');}
@@ -1597,6 +1600,31 @@ function unload(){document.getElementById('loader').classList.remove('on');}
 // Wire mock-btn onclick (subj-btn and snext have inline handlers)
 const _mb = document.getElementById('mock-btn');
 if (_mb) _mb.onclick = startMock;
+     // ════════════════════════════════════════════════════════
+// BACK BUTTON HANDLING — keeps user inside the app
+// ════════════════════════════════════════════════════════
+window.addEventListener('popstate', (e) => {
+  const currentScreen = document.querySelector('.scr.on')?.id;
+
+  // Agar quiz screen pe hai aur user Back dabaaye, to confirm le
+  if (currentScreen === 's-quiz') {
+    const ok = confirm(t('quitMsg'));
+    if (!ok) {
+      // user ne cancel kiya — usi quiz screen pe wapas rakho
+      history.pushState({screen: 's-quiz'}, '', '#s-quiz');
+      return;
+    }
+    if (S.timer) clearInterval(S.timer);
+  }
+
+  if (e.state && e.state.screen) {
+    go(e.state.screen, false);   // false = dobara history push mat karo
+  } else {
+    // history khatam ho gayi — home pe le aao (site se bahar nahi jaane do)
+    go('s-home', false);
+    history.replaceState({screen: 's-home'}, '', '#s-home');
+  }
+});
 </script>
 </body>
 </html>
