@@ -56,6 +56,9 @@ export default async function handler(req, res) {
   const wantHalf   = Math.floor(wantCount / 2);
 
   // 1. Safely extract variables (handles undefined body, and parses strings to correct types)
+  // 1. Safely extract ALL variables from the request body
+  const examId = req.body?.examId;
+  const lang = req.body?.lang || 'en';
   const pyqOnly = req.body?.pyqOnly === true || req.body?.pyqOnly === 'true';
   const wantCount = parseInt(req.body?.count, 10) || 50;
 
