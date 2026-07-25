@@ -38,6 +38,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: "Invalid request — missing prompt" });
   }
   const wantCount = Number(count) > 0 ? Number(count) : 50;
+  const pyqOnly = req.body?.pyqOnly === true;
 
   const apiKey   = process.env.GEMINI_API_KEY;
   const supaUrl  = process.env.SUPABASE_URL;
