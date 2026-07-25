@@ -1653,7 +1653,14 @@ function fireConfetti() {
 // ════════════════════════════════════════════════════════
 // NAV + LOADING
 // ════════════════════════════════════════════════════════
-function go(id){
+function addToHistory(id) {
+  // Adds screen to browser history so the back button works natively
+  if (window.history && window.history.pushState) {
+    window.history.pushState({screen: id}, '', '#' + id);
+  }
+}
+     
+     function go(id){
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
   window.scrollTo({top:0,behavior:'smooth'});
