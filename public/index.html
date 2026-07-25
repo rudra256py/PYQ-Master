@@ -1538,7 +1538,9 @@ async function startSub() {
   }
 }
 async function retry() {
-  S.mode.includes('MOCK')||S.mode.includes('मॉक') ? await startMock() : await startSub();
+  if (S.mode.includes('MOCK')||S.mode.includes('मॉक')) await startMock();
+  else if (S.mode.includes('PYQ')||S.mode.includes('वर्ष')) await startPYQOnly();
+  else await startSub();
 }
 
 async function launch(n) {
