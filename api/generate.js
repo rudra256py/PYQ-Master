@@ -12,10 +12,14 @@
 // If Supabase env vars are not set, this file falls back to calling
 // Gemini every time (exactly like before) — nothing breaks.
 // ════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+// api/generate.js — Backend with question caching + real PYQ pool
+//                  + dedicated PYQ-only mode (no Gemini call)
+// ════════════════════════════════════════════════════════════
 
 import { createClient } from '@supabase/supabase-js';
 
-const MODELS = ["gemini-3.5-flash", "gemini-3.1-flash-lite", "gemini-flash-latest"];
+const MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-flash-latest"];
 
 function shuffle(arr) {
   const a = [...arr];
@@ -34,17 +38,17 @@ export default async function handler(req, res) {
   if (req.method !== "POST")   return res.status(405).json({ error: "Method not allowed" });
 
   const { prompt, lang, examId, subjects, chapters, count } = req.body || {};
-  if (!prompt || typeof prompt !== "string") {
+  const pyqOnly = req.body?.pyqOnly === true;
+
+  if (!pyqOnly && (!prompt || typeof prompt !== "string")) {
     return res.status(400).json({ error: "Invalid request — missing prompt" });
   }
   const wantCount = Number(count) > 0 ? Number(count) : 50;
-  const pyqOnly = req.body?.pyqOnly === true;
 
   const apiKey   = process.env.GEMINI_API_KEY;
   const supaUrl  = process.env.SUPABASE_URL;
   const supaKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-  // Supabase is OPTIONAL — site still works (always calls Gemini) if not set up yet
   let supabase = null;
   if (supaUrl && supaKey) {
     try { supabase = createClient(supaUrl, supaKey); }
@@ -55,29 +59,11 @@ export default async function handler(req, res) {
   const chapterKey = (Array.isArray(chapters) && chapters.length) ? [...chapters].sort().join('|') : 'all';
   const wantHalf   = Math.floor(wantCount / 2);
 
-  // 1. Safely extract variables (handles undefined body, and parses strings to correct types)
-  // 1. Safely extract ALL variables from the request body
-  const examId = req.body?.examId;
-  const lang = req.body?.lang || 'en';
-  const pyqOnly = req.body?.pyqOnly === true || req.body?.pyqOnly === 'true';
-  const wantCount = parseInt(req.body?.count, 10) || 50;
-
-  // 2. Define a safe, local shuffle function
-  const shuffleArray = (array) => {
-    if (!Array.isArray(array)) return [];
-    const arr = [...array];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  };
-
   let pyqPool = [];
   let cachePool = [];
 
-  // Ensure core dependencies exist before querying
-  if (typeof supabase !== 'undefined' && typeof examId !== 'undefined') {
+  // ── STEP 1: Pull real PYQs from database ──
+  if (supabase && examId) {
     try {
       let query = supabase
         .from('pyq_uploads')
@@ -86,77 +72,59 @@ export default async function handler(req, res) {
         .eq('lang', lang || 'en');
 
       if (pyqOnly) {
-        // Last 10 years only for the dedicated "10-Year PYQ" button
         const tenYearsAgo = new Date().getFullYear() - 10;
         query = query.gte('year', tenYearsAgo);
       }
 
-      // VITAL FIX: Supabase returns { data, error }, it does not always throw exceptions.
-      const { data: pyqRows, error: pyqError } = await query.limit(500);
-      
-      if (pyqError) {
-        console.warn("pyq_uploads query error:", pyqError.message);
-      } else if (pyqRows && pyqRows.length > 0) {
+      const { data: pyqRows } = await query.limit(500);
+      if (pyqRows) {
         pyqPool = pyqRows.map(r => ({
           q: r.q,
           opts: [r.opt_a, r.opt_b, r.opt_c, r.opt_d],
           ans: r.ans,
           exp: r.exp || '',
           type: 'pyq',
-          source: `${examId.toUpperCase()} ${r.year || ''}`.trim(),
+          source: `${examId.toUpperCase()} ${r.year}`,
           subject: r.subject || '',
         }));
       }
-    } catch (e) { 
-      console.warn("pyq_uploads read exception:", e.message); 
-    }
+    } catch (e) { console.warn("pyq_uploads read failed:", e.message); }
 
+    // Skip AI-cache lookup entirely in PYQ-only mode
     if (!pyqOnly) {
       try {
-        const { data: cacheRows, error: cacheError } = await supabase
+        const { data: cacheRows } = await supabase
           .from('questions_cache')
           .select('*')
           .eq('exam_id', examId)
           .eq('lang', lang || 'en')
-          .eq('subject_key', typeof subjectKey !== 'undefined' ? subjectKey : '')
-          .eq('chapter_key', typeof chapterKey !== 'undefined' ? chapterKey : '')
+          .eq('subject_key', subjectKey)
+          .eq('chapter_key', chapterKey)
           .limit(400);
-          
-        if (cacheError) {
-          console.warn("questions_cache query error:", cacheError.message);
-        } else if (cacheRows) {
-          cachePool = cacheRows.map(r => r.question);
-        }
-      } catch (e) { 
-        console.warn("questions_cache read exception:", e.message); 
-      }
+        if (cacheRows) cachePool = cacheRows.map(r => r.question);
+      } catch (e) { console.warn("questions_cache read failed:", e.message); }
     }
   }
 
-  // 3. Safely shuffle the arrays
-  pyqPool = shuffleArray(pyqPool);
+  pyqPool = shuffle(pyqPool);
 
-  // ── PYQ-ONLY MODE: never call AI, just return what's in the DB ──
+  // ── PYQ-ONLY MODE: return straight from DB, never call Gemini ──
   if (pyqOnly) {
     return res.status(200).json({
       questions: pyqPool.slice(0, wantCount),
       source: 'pyq-database',
-      lang: typeof lang !== 'undefined' ? lang : 'en',
+      lang,
       totalAvailable: pyqPool.length,
     });
   }
 
-  cachePool = shuffleArray(cachePool); catch (e) { console.warn("questions_cache read failed:", e.message); }
-  }
-
-  pyqPool   = shuffle(pyqPool);
   cachePool = shuffle(cachePool);
 
   const chosenPyq = pyqPool.slice(0, wantHalf);
   const chosenAi  = cachePool.slice(0, wantCount - chosenPyq.length);
   let finalQs     = shuffle([...chosenPyq, ...chosenAi]);
 
-  // ── STEP 3: Enough already in the database? Skip Gemini completely ──
+  // ── Enough already in the database? Skip Gemini completely ──
   if (finalQs.length >= wantCount) {
     return res.status(200).json({
       questions: finalQs.slice(0, wantCount),
@@ -165,9 +133,8 @@ export default async function handler(req, res) {
     });
   }
 
-  // ── STEP 4: Not enough — call Gemini for the shortfall ──
+  // ── Not enough — call Gemini for the shortfall ──
   if (!apiKey) {
-    // No Gemini key AND not enough DB questions — return what we have (may be short)
     if (finalQs.length > 0) {
       return res.status(200).json({ questions: finalQs, source: 'database-partial', lang });
     }
@@ -230,7 +197,6 @@ export default async function handler(req, res) {
     });
   }
 
-  // ── Save newly generated AI questions to cache so future users reuse them ──
   if (supabase && generated.length && examId) {
     try {
       const rows = generated.map(q => ({
@@ -241,65 +207,9 @@ export default async function handler(req, res) {
         question: q,
         q_type: q.type || 'ai',
       }));
-     let pyqPool = [];
-  let cachePool = [];
-
-  if (supabase && examId) {
-    try {
-      let query = supabase
-        .from('pyq_uploads')
-        .select('*')
-        .eq('exam_id', examId)
-        .eq('lang', lang || 'en');
-
-      if (pyqOnly) {
-        // Last 10 years only, for the dedicated "10-Year PYQ" button
-        const tenYearsAgo = new Date().getFullYear() - 10;
-        query = query.gte('year', tenYearsAgo);
-      }
-
-      const { data: pyqRows } = await query.limit(500);
-      if (pyqRows) {
-        pyqPool = pyqRows.map(r => ({
-          q: r.q,
-          opts: [r.opt_a, r.opt_b, r.opt_c, r.opt_d],
-          ans: r.ans,
-          exp: r.exp || '',
-          type: 'pyq',
-          source: `${examId.toUpperCase()} ${r.year}`,
-          subject: r.subject || '',
-        }));
-      }
-    } catch (e) { console.warn("pyq_uploads read failed:", e.message); }
-
-    if (!pyqOnly) {
-      try {
-        const { data: cacheRows } = await supabase
-          .from('questions_cache')
-          .select('*')
-          .eq('exam_id', examId)
-          .eq('lang', lang || 'en')
-          .eq('subject_key', subjectKey)
-          .eq('chapter_key', chapterKey)
-          .limit(400);
-        if (cacheRows) cachePool = cacheRows.map(r => r.question);
-      } catch (e) { console.warn("questions_cache read failed:", e.message); }
-    }
+      await supabase.from('questions_cache').insert(rows);
+    } catch (e) { console.warn("questions_cache insert failed:", e.message); }
   }
-
-  pyqPool = shuffle(pyqPool);
-
-  // ── PYQ-ONLY MODE: never call Gemini, just return what's in the DB ──
-  if (pyqOnly) {
-    return res.status(200).json({
-      questions: pyqPool.slice(0, wantCount),
-      source: 'pyq-database',
-      lang,
-      totalAvailable: pyqPool.length,
-    });
-  }
-
-  cachePool = shuffle(cachePool);
 
   finalQs = shuffle([...finalQs, ...generated]).slice(0, wantCount);
 
