@@ -520,6 +520,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
       <div class="eb-title" id="etitle"></div>
       <div class="eb-sub"   id="esub"></div>
       <div class="meta-row" id="emeta"></div>
+         
     </div>
     <div class="igrid">
       <div class="icard"><div class="ict" id="swt">📊 Subject Weightage</div><div id="sbars"></div></div>
@@ -537,6 +538,23 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
           <span class="ab-ico">⚡</span>
           <div class="ab-t" id="mbt">Full Mock Test</div>
           <div class="ab-d" id="mbd">50 mixed Qs, timed, all subjects</div>
+             <div class="agrid" style="grid-template-columns:1fr 1fr 1fr">
+  <button class="abtn pri" id="mock-btn" onclick="startMock()">
+    <span class="ab-ico">⚡</span>
+    <div class="ab-t" id="mbt">Full Mock Test</div>
+    <div class="ab-d" id="mbd">50 mixed Qs, timed, all subjects</div>
+  </button>
+  <button class="abtn sec" id="subj-btn" onclick="goSubj();go('s-subj')">
+    <span class="ab-ico">📚</span>
+    <div class="ab-t" id="sbt">Subject-wise Practice</div>
+    <div class="ab-d" id="sbd">Pick subjects or chapters to focus</div>
+  </button>
+  <button class="abtn sec" id="pyq10-btn" onclick="startPYQOnly()" style="border-color:var(--teal)">
+    <span class="ab-ico">📜</span>
+    <div class="ab-t">10-Year PYQ</div>
+    <div class="ab-d">Only real questions from last 10 years — no AI</div>
+  </button>
+</div>
         </button>
         <button class="abtn sec" id="subj-btn" onclick="goSubj();go('s-subj')">
           <span class="ab-ico">📚</span>
