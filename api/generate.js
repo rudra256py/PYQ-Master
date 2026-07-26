@@ -22,7 +22,7 @@ export const config = {
   maxDuration: 60,
 };
 
-const MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-flash-latest"];
+const MODELS = ["gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro"];
 
 function shuffle(arr) {
   const a = [...arr];
@@ -155,7 +155,7 @@ export default async function handler(req, res) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 8000 },
+          generationConfig: { temperature: 0.7, maxOutputTokens: 8000, responseMimeType: "application/json" },
         }),
       });
       const geminiData = await geminiRes.json();
