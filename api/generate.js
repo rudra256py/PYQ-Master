@@ -22,7 +22,7 @@ export const config = {
   maxDuration: 60,
 };
 
-const MODELS = ["gemini-2.5-flash-lite"];
+const MODELS = ["gemini-3.5-flash-lite", "gemini-3.6-flash"];
 
 function shuffle(arr) {
   const a = [...arr];
