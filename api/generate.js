@@ -1,64 +1,10 @@
 // ════════════════════════════════════════════════════════════
 // api/generate.js — Backend with question caching + real PYQ pool
-//
-// FLOW ON EVERY REQUEST:
-//  1. Look in Supabase for real admin-uploaded PYQs (pyq_uploads table)
-//  2. Look in Supabase for previously AI-generated questions (questions_cache)
-//  3. If (1)+(2) together give enough questions → return them, skip Gemini
-//     entirely (this is the "reuse, don't regenerate" behaviour requested)
-//  4. If not enough → call Gemini for the shortfall, save new ones into
-//     questions_cache so the NEXT user gets them for free from the DB
-//
-// If Supabase env vars are not set, this file falls back to calling
-// Gemini every time (exactly like before) — nothing breaks.
-// ════════════════════════════════════════════════════════════
-// ════════════════════════════════════════════════════════════
-// api/generate.js — Backend with question caching + real PYQ pool
 //                  + dedicated PYQ-only mode (no Gemini call)
 // ════════════════════════════════════════════════════════════
 
-// ==========================================
-// STEP 1: AT THE VERY TOP OF api/generate.js (LINE 1)
-// ==========================================
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-// This line fixes: "ReferenceError: supabase is not defined"
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-// ==========================================
-// STEP 2: YOUR MAIN EXPORT FUNCTION
-// ==========================================
-export default async function handler(req, res) {
-  try {
-    // ------------------------------------------------------------------
-    // PASTE ALL YOUR EXISTING API CODE HERE
-    // ------------------------------------------------------------------
-    // Every single line of code that was previously inside your handler
-    // (including line 226 where you call `supabase.from(...)` or similar)
-    // goes INSIDE this `try` block.
-    
-    // Example:
-    // const { data, error } = await supabase.from('pyqs').select('*');
-    // if (error) throw error;
-
-    // At the end of your logic, return your JSON response:
-    return res.status(200).json({ success: true, data: /* your data */ });
-
-  } catch (error) {
-    // ------------------------------------------------------------------
-    // THIS PREVENTS THE "Something went wrong ... not valid JSON" CRASH
-    // ------------------------------------------------------------------
-    console.error('API Generate Error:', error);
-    return res.status(500).json({
-      success: false,
-      error: error.message || 'Internal Server Error',
-    });
-  }
-}
-import { createClient } from '@supabase/supabase-js';
 export const config = {
   maxDuration: 60,
 };
@@ -75,265 +21,242 @@ function shuffle(arr) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") return res.status(200).end();
-  if (req.method !== "POST")   return res.status(405).json({ error: "Method not allowed" });
+  // Safe JSON wrapper to ensure Vercel never returns HTML text on crashes
+  try {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    if (req.method === "OPTIONS") return res.status(200).end();
+    if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const { prompt, lang, examId, subjects, chapters, count } = req.body || {};
-  const pyqOnly = req.body?.pyqOnly === true;
+    const { prompt, lang, examId, subjects, chapters, count } = req.body || {};
+    const pyqOnly = req.body?.pyqOnly === true;
 
-  if (!pyqOnly && (!prompt || typeof prompt !== "string")) {
-    return res.status(400).json({ error: "Invalid request — missing prompt" });
-  }
-  const wantCount = Number(count) > 0 ? Number(count) : 50;
+    if (!pyqOnly && (!prompt || typeof prompt !== "string")) {
+      return res.status(400).json({ error: "Invalid request — missing prompt" });
+    }
+    const wantCount = Number(count) > 0 ? Number(count) : 50;
 
-  const apiKey   = process.env.GEMINI_API_KEY;
-  const supaUrl  = process.env.SUPABASE_URL;
-  const supaKey  = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const apiKey  = process.env.GEMINI_API_KEY;
+    const supaUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supaKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  let supabase = null;
-  if (supaUrl && supaKey) {
-    try { supabase = createClient(supaUrl, supaKey); }
-    catch (e) { console.warn("Supabase init failed:", e.message); }
-  }
-
-  const subjectKey = (Array.isArray(subjects) && subjects.length) ? [...subjects].sort().join('|') : 'all';
-  const chapterKey = (Array.isArray(chapters) && chapters.length) ? [...chapters].sort().join('|') : 'all';
-  const wantHalf   = Math.floor(wantCount / 2);
-
-  let pyqPool = [];
-  let cachePool = [];
-
-  // ── STEP 1: Pull real PYQs from database ──
-  if (supabase && examId) {
-    try {
-      let query = supabase
-        .from('pyq_uploads')
-        .select('*')
-        .eq('exam_id', examId)
-        .eq('lang', lang || 'en');
-
-      if (pyqOnly) {
-        const tenYearsAgo = new Date().getFullYear() - 10;
-        query = query.gte('year', tenYearsAgo);
+    let supabase = null;
+    if (supaUrl && supaKey) {
+      try { 
+        supabase = createClient(supaUrl, supaKey); 
+      } catch (e) { 
+        console.warn("Supabase init failed:", e.message); 
       }
+    }
 
-      const { data: pyqRows } = await query.limit(500);
-      if (pyqRows) {
-        pyqPool = pyqRows.map(r => ({
-          q: r.q,
-          opts: [r.opt_a, r.opt_b, r.opt_c, r.opt_d],
-          ans: r.ans,
-          exp: r.exp || '',
-          type: 'pyq',
-          source: `${examId.toUpperCase()} ${r.year}`,
-          subject: r.subject || '',
-        }));
-      }
-    } catch (e) { console.warn("pyq_uploads read failed:", e.message); }
+    const subjectKey = (Array.isArray(subjects) && subjects.length) ? [...subjects].sort().join('|') : 'all';
+    const chapterKey = (Array.isArray(chapters) && chapters.length) ? [...chapters].sort().join('|') : 'all';
+    const wantHalf   = Math.floor(wantCount / 2);
 
-    // Skip AI-cache lookup entirely in PYQ-only mode
-    if (!pyqOnly) {
+    let pyqPool = [];
+    let cachePool = [];
+
+    // ── STEP 1: Pull real PYQs from database (Defensive Parsing) ──
+    if (supabase && examId) {
       try {
-        const { data: cacheRows } = await supabase
-          .from('questions_cache')
+        const cleanExamId = String(examId).trim().toLowerCase();
+        const cleanLang   = String(lang || 'en').trim().toLowerCase();
+
+        let query = supabase
+          .from('pyq_uploads')
           .select('*')
-          .eq('exam_id', examId)
-          .eq('lang', lang || 'en')
-          .eq('subject_key', subjectKey)
-          .eq('chapter_key', chapterKey)
-          .limit(400);
-        if (cacheRows) cachePool = cacheRows.map(r => r.question);
-      } catch (e) { console.warn("questions_cache read failed:", e.message); }
+          .eq('exam_id', cleanExamId)
+          .eq('lang', cleanLang);
+
+        if (pyqOnly) {
+          const tenYearsAgo = new Date().getFullYear() - 10;
+          query = query.gte('year', String(tenYearsAgo));
+        }
+
+        const { data: pyqRows, error: pyqErr } = await query.limit(500);
+
+        if (pyqErr) {
+          console.warn("pyq_uploads query error:", JSON.stringify(pyqErr));
+        }
+
+        if (Array.isArray(pyqRows) && pyqRows.length) {
+          pyqPool = pyqRows
+            .map(r => {
+              let opts = r.opts;
+              if (typeof opts === 'string') {
+                try { opts = JSON.parse(opts); } catch { opts = []; }
+              }
+              if (!Array.isArray(opts)) opts = [];
+
+              return {
+                q: r.q || '',
+                opts,
+                ans: Number.isInteger(r.ans) ? r.ans : Number(r.ans),
+                exp: r.exp || '',
+                type: 'pyq',
+                source: `${cleanExamId.toUpperCase()} ${r.year || ''}`.trim(),
+                subject: r.subject || '',
+              };
+            })
+            .filter(row =>
+              row.q.length > 3 &&
+              row.opts.length >= 2 &&
+              Number.isInteger(row.ans) &&
+              row.ans >= 0 &&
+              row.ans < row.opts.length
+            );
+
+          const droppedCount = pyqRows.length - pyqPool.length;
+          if (droppedCount > 0) {
+            console.warn(`pyq_uploads: ${droppedCount} row(s) skipped due to malformed data (exam_id=${cleanExamId})`);
+          }
+        } else if (!pyqErr) {
+          console.warn(`pyq_uploads: 0 rows for exam_id="${cleanExamId}", lang="${cleanLang}", pyqOnly=${pyqOnly}`);
+        }
+      } catch (e) {
+        console.warn("pyq_uploads read failed:", e.message);
+      }
+
+      // Skip AI-cache lookup entirely in PYQ-only mode
+      if (!pyqOnly) {
+        try {
+          const { data: cacheRows } = await supabase
+            .from('questions_cache')
+            .select('*')
+            .eq('exam_id', examId)
+            .eq('lang', lang || 'en')
+            .eq('subject_key', subjectKey)
+            .eq('chapter_key', chapterKey)
+            .limit(400);
+          if (cacheRows) cachePool = cacheRows.map(r => r.question);
+        } catch (e) { 
+          console.warn("questions_cache read failed:", e.message); 
+        }
+      }
     }
-  }
 
-  pyqPool = shuffle(pyqPool);
+    pyqPool = shuffle(pyqPool);
 
-  // ── PYQ-ONLY MODE: return straight from DB, never call Gemini ──
-  if (pyqOnly) {
-    return res.status(200).json({
-      questions: pyqPool.slice(0, wantCount),
-      source: 'pyq-database',
-      lang,
-      totalAvailable: pyqPool.length,
-    });
-  }
-
-  cachePool = shuffle(cachePool);
-
-  const chosenPyq = pyqPool.slice(0, wantHalf);
-  const chosenAi  = cachePool.slice(0, wantCount - chosenPyq.length);
-  let finalQs     = shuffle([...chosenPyq, ...chosenAi]);
-
-  // ── Enough already in the database? Skip Gemini completely ──
-  if (finalQs.length >= wantCount) {
-    return res.status(200).json({
-      questions: finalQs.slice(0, wantCount),
-      source: 'database',
-      lang,
-    });
-  }
-
-  // ── Not enough — call Gemini for the shortfall ──
-  if (!apiKey) {
-    if (finalQs.length > 0) {
-      return res.status(200).json({ questions: finalQs, source: 'database-partial', lang });
-    }
-    return res.status(500).json({ error: "GEMINI_API_KEY not set and no cached questions available." });
-  }
-
-  let generated = [];
-  let lastError = "";
-
-  for (const model of MODELS) {
-    const URL = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-    try {
-      const geminiRes = await fetch(URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 8000, responseMimeType: "application/json" },
-        }),
+    // ── PYQ-ONLY MODE: return straight from DB, never call Gemini ──
+    if (pyqOnly) {
+      return res.status(200).json({
+        questions: pyqPool.slice(0, wantCount),
+        source: 'pyq-database',
+        lang,
+        totalAvailable: pyqPool.length,
       });
-      const geminiData = await geminiRes.json();
+    }
 
-      if (!geminiRes.ok) {
-        lastError = `${model}: ${geminiRes.status} — ${geminiData?.error?.message || ''}`;
+    cachePool = shuffle(cachePool);
+
+    const chosenPyq = pyqPool.slice(0, wantHalf);
+    const chosenAi  = cachePool.slice(0, wantCount - chosenPyq.length);
+    let finalQs     = shuffle([...chosenPyq, ...chosenAi]);
+
+    // ── Enough already in the database? Skip Gemini completely ──
+    if (finalQs.length >= wantCount) {
+      return res.status(200).json({
+        questions: finalQs.slice(0, wantCount),
+        source: 'database',
+        lang,
+      });
+    }
+
+    // ── Not enough — call Gemini for the shortfall ──
+    if (!apiKey) {
+      if (finalQs.length > 0) {
+        return res.status(200).json({ questions: finalQs, source: 'database-partial', lang });
+      }
+      return res.status(500).json({ error: "GEMINI_API_KEY not set and no cached questions available." });
+    }
+
+    let generated = [];
+    let lastError = "";
+
+    for (const model of MODELS) {
+      const URL = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      try {
+        const geminiRes = await fetch(URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.7, maxOutputTokens: 8000, responseMimeType: "application/json" },
+          }),
+        });
+        const geminiData = await geminiRes.json();
+
+        if (!geminiRes.ok) {
+          lastError = `${model}: ${geminiRes.status} — ${geminiData?.error?.message || ''}`;
+          console.warn(lastError);
+          continue;
+        }
+
+        const raw = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        if (!raw) { lastError = `${model}: empty response`; continue; }
+
+        const cleaned = raw.replace(/```json\s*/gi, "").replace(/```\s*/gi, "").trim();
+        const match = cleaned.match(/\[[\s\S]*\]/);
+        if (!match) { lastError = `${model}: no JSON array found`; continue; }
+
+        const qs = JSON.parse(match[0]);
+        const valid = (qs || []).filter(q =>
+          q && typeof q.q === "string" && q.q.length > 3 &&
+          Array.isArray(q.opts) && q.opts.length >= 2 &&
+          typeof q.ans === "number" && q.ans >= 0 && q.ans < q.opts.length
+        );
+
+        if (valid.length === 0) { lastError = `${model}: invalid question format`; continue; }
+
+        generated = valid;
+        console.log(`✅ Gemini success with ${model}: ${valid.length} questions`);
+        break;
+
+      } catch (err) {
+        lastError = `${model}: ${err.message}`;
         console.warn(lastError);
         continue;
       }
-
-      const raw = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      if (!raw) { lastError = `${model}: empty response`; continue; }
-
-      const cleaned = raw.replace(/```json\s*/gi, "").replace(/```\s*/gi, "").trim();
-      const match = cleaned.match(/\[[\s\S]*\]/);
-      if (!match) { lastError = `${model}: no JSON array found`; continue; }
-
-      const qs = JSON.parse(match[0]);
-      const valid = (qs || []).filter(q =>
-        q && typeof q.q === "string" && q.q.length > 3 &&
-        Array.isArray(q.opts) && q.opts.length >= 2 &&
-        typeof q.ans === "number" && q.ans >= 0 && q.ans < q.opts.length
-      );
-
-      if (valid.length === 0) { lastError = `${model}: invalid question format`; continue; }
-
-      generated = valid;
-      console.log(`✅ Gemini success with ${model}: ${valid.length} questions`);
-      break;
-
-    } catch (err) {
-      lastError = `${model}: ${err.message}`;
-      console.warn(lastError);
-      continue;
-    }
-  }
-
-  if (generated.length === 0 && finalQs.length === 0) {
-    return res.status(502).json({
-      error: "AI service unavailable. Please try again in a moment.",
-      detail: lastError,
-    });
-  }
-
-  if (supabase && generated.length && examId) {
-    try {
-      const rows = generated.map(q => ({
-        exam_id: examId,
-        lang: lang || 'en',
-        subject_key: subjectKey,
-        chapter_key: chapterKey,
-        question: q,
-        q_type: q.type || 'ai',
-      }));
-      await supabase.from('questions_cache').insert(rows);
-    } catch (e) { console.warn("questions_cache insert failed:", e.message); }
-  }
-
-  finalQs = shuffle([...finalQs, ...generated]).slice(0, wantCount);
-
-  return res.status(200).json({
-    questions: finalQs,
-    source: finalQs.length && generated.length ? 'mixed' : (generated.length ? 'gemini' : 'database'),
-    lang,
-  });
-}
-// ── STEP 1: Pull real PYQs from database ──
-if (supabase && examId) {
-  try {
-    // ✅ Trim + lowercase to avoid silent mismatches from stray spaces/case
-    const cleanExamId = String(examId).trim().toLowerCase();
-    const cleanLang   = String(lang || 'en').trim().toLowerCase();
-
-    let query = supabase
-      .from('pyq_uploads')
-      .select('*')
-      .eq('exam_id', cleanExamId)
-      .eq('lang', cleanLang);
-
-    if (pyqOnly) {
-      const tenYearsAgo = new Date().getFullYear() - 10;
-      // year column is TEXT in Supabase — always compare as string
-      query = query.gte('year', String(tenYearsAgo));
     }
 
-    const { data: pyqRows, error: pyqErr } = await query.limit(500);
-
-    if (pyqErr) {
-      // ✅ Always log full error object, not just .message — some
-      // Supabase errors (RLS, type-cast) hide details in .details/.hint
-      console.warn("pyq_uploads query error:", JSON.stringify(pyqErr));
+    if (generated.length === 0 && finalQs.length === 0) {
+      return res.status(502).json({
+        error: "AI service unavailable. Please try again in a moment.",
+        detail: lastError,
+      });
     }
 
-    if (Array.isArray(pyqRows) && pyqRows.length) {
-      pyqPool = pyqRows
-        .map(r => {
-          // ✅ Defensive parsing — opts may arrive as a JSON string
-          // instead of a real array depending on how it was inserted
-          let opts = r.opts;
-          if (typeof opts === 'string') {
-            try { opts = JSON.parse(opts); } catch { opts = []; }
-          }
-          if (!Array.isArray(opts)) opts = [];
-
-          return {
-            q: r.q || '',
-            opts,
-            ans: Number.isInteger(r.ans) ? r.ans : Number(r.ans),
-            exp: r.exp || '',
-            type: 'pyq',
-            source: `${cleanExamId.toUpperCase()} ${r.year || ''}`.trim(),
-            subject: r.subject || '',
-          };
-        })
-        // ✅ Drop any row that's structurally broken — bad data should
-        // never reach the frontend and silently break the quiz UI
-        .filter(row =>
-          row.q.length > 3 &&
-          row.opts.length >= 2 &&
-          Number.isInteger(row.ans) &&
-          row.ans >= 0 &&
-          row.ans < row.opts.length
-        );
-
-      // ✅ Tell yourself in the logs how many rows got silently dropped —
-      // this is exactly the kind of thing that costs an hour of debugging
-      // later if you don't log it now
-      const droppedCount = pyqRows.length - pyqPool.length;
-      if (droppedCount > 0) {
-        console.warn(`pyq_uploads: ${droppedCount} row(s) skipped due to malformed data (exam_id=${cleanExamId})`);
+    if (supabase && generated.length && examId) {
+      try {
+        const rows = generated.map(q => ({
+          exam_id: examId,
+          lang: lang || 'en',
+          subject_key: subjectKey,
+          chapter_key: chapterKey,
+          question: q,
+          q_type: q.type || 'ai',
+        }));
+        await supabase.from('questions_cache').insert(rows);
+      } catch (e) { 
+        console.warn("questions_cache insert failed:", e.message); 
       }
-    } else if (!pyqErr) {
-      // ✅ Query succeeded but returned nothing — log the exact filters
-      // used, so a mismatch is obvious from the Vercel logs alone
-      console.warn(`pyq_uploads: 0 rows for exam_id="${cleanExamId}", lang="${cleanLang}", pyqOnly=${pyqOnly}`);
     }
-  } catch (e) {
-    console.warn("pyq_uploads read failed:", e.message);
+
+    finalQs = shuffle([...finalQs, ...generated]).slice(0, wantCount);
+
+    return res.status(200).json({
+      questions: finalQs,
+      source: finalQs.length && generated.length ? 'mixed' : (generated.length ? 'gemini' : 'database'),
+      lang,
+    });
+
+  } catch (error) {
+    // ── Global Error Catch: Returns JSON instead of crashing Vercel ──
+    console.error('API Generate Error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Internal Server Error',
+    });
   }
 }
