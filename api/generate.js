@@ -17,6 +17,7 @@
 //                  + dedicated PYQ-only mode (no Gemini call)
 // ════════════════════════════════════════════════════════════
 
+import { supabase } from '../lib/supabase.js'; // Adjust relative path as needed
 import { createClient } from '@supabase/supabase-js';
 export const config = {
   maxDuration: 60,
