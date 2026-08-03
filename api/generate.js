@@ -222,3 +222,77 @@ export default async function handler(req, res) {
     lang,
   });
 }
+// ── STEP 1: Pull real PYQs from database ──
+if (supabase && examId) {
+  try {
+    // ✅ Trim + lowercase to avoid silent mismatches from stray spaces/case
+    const cleanExamId = String(examId).trim().toLowerCase();
+    const cleanLang   = String(lang || 'en').trim().toLowerCase();
+
+    let query = supabase
+      .from('pyq_uploads')
+      .select('*')
+      .eq('exam_id', cleanExamId)
+      .eq('lang', cleanLang);
+
+    if (pyqOnly) {
+      const tenYearsAgo = new Date().getFullYear() - 10;
+      // year column is TEXT in Supabase — always compare as string
+      query = query.gte('year', String(tenYearsAgo));
+    }
+
+    const { data: pyqRows, error: pyqErr } = await query.limit(500);
+
+    if (pyqErr) {
+      // ✅ Always log full error object, not just .message — some
+      // Supabase errors (RLS, type-cast) hide details in .details/.hint
+      console.warn("pyq_uploads query error:", JSON.stringify(pyqErr));
+    }
+
+    if (Array.isArray(pyqRows) && pyqRows.length) {
+      pyqPool = pyqRows
+        .map(r => {
+          // ✅ Defensive parsing — opts may arrive as a JSON string
+          // instead of a real array depending on how it was inserted
+          let opts = r.opts;
+          if (typeof opts === 'string') {
+            try { opts = JSON.parse(opts); } catch { opts = []; }
+          }
+          if (!Array.isArray(opts)) opts = [];
+
+          return {
+            q: r.q || '',
+            opts,
+            ans: Number.isInteger(r.ans) ? r.ans : Number(r.ans),
+            exp: r.exp || '',
+            type: 'pyq',
+            source: `${cleanExamId.toUpperCase()} ${r.year || ''}`.trim(),
+            subject: r.subject || '',
+          };
+        })
+        // ✅ Drop any row that's structurally broken — bad data should
+        // never reach the frontend and silently break the quiz UI
+        .filter(row =>
+          row.q.length > 3 &&
+          row.opts.length >= 2 &&
+          Number.isInteger(row.ans) &&
+          row.ans >= 0 &&
+          row.ans < row.opts.length
+        );
+
+      // ✅ Tell yourself in the logs how many rows got silently dropped —
+      // this is exactly the kind of thing that costs an hour of debugging
+      // later if you don't log it now
+      const droppedCount = pyqRows.length - pyqPool.length;
+      if (droppedCount > 0) {
+        console.warn(`pyq_uploads: ${droppedCount} row(s) skipped due to malformed data (exam_id=${cleanExamId})`);
+      }
+    } else if (!pyqErr) {
+      // ✅ Query succeeded but returned nothing — log the exact filters
+      // used, so a mismatch is obvious from the Vercel logs alone
+      console.warn(`pyq_uploads: 0 rows for exam_id="${cleanExamId}", lang="${cleanLang}", pyqOnly=${pyqOnly}`);
+    }
+  } catch (e) {
+    console.warn("pyq_uploads read failed:", e.message);
+  }
+}
