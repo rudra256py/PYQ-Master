@@ -17,7 +17,47 @@
 //                  + dedicated PYQ-only mode (no Gemini call)
 // ════════════════════════════════════════════════════════════
 
-import { supabase } from '../lib/supabase.js'; // Adjust relative path as needed
+// ==========================================
+// STEP 1: AT THE VERY TOP OF api/generate.js (LINE 1)
+// ==========================================
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+// This line fixes: "ReferenceError: supabase is not defined"
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// ==========================================
+// STEP 2: YOUR MAIN EXPORT FUNCTION
+// ==========================================
+export default async function handler(req, res) {
+  try {
+    // ------------------------------------------------------------------
+    // PASTE ALL YOUR EXISTING API CODE HERE
+    // ------------------------------------------------------------------
+    // Every single line of code that was previously inside your handler
+    // (including line 226 where you call `supabase.from(...)` or similar)
+    // goes INSIDE this `try` block.
+    
+    // Example:
+    // const { data, error } = await supabase.from('pyqs').select('*');
+    // if (error) throw error;
+
+    // At the end of your logic, return your JSON response:
+    return res.status(200).json({ success: true, data: /* your data */ });
+
+  } catch (error) {
+    // ------------------------------------------------------------------
+    // THIS PREVENTS THE "Something went wrong ... not valid JSON" CRASH
+    // ------------------------------------------------------------------
+    console.error('API Generate Error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Internal Server Error',
+    });
+  }
+}
 import { createClient } from '@supabase/supabase-js';
 export const config = {
   maxDuration: 60,
